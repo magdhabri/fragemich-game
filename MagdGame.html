@@ -533,12 +533,13 @@
 		@media (max-width: 1080px) {
 			.board-layout {
 				grid-template-columns: 1fr;
+				grid-template-rows: auto auto;
 				overflow: auto;
-				height: 100vh;
+				height: 100svh;
 			}
 
 			.board-left {
-				min-height: 58vh;
+				min-height: 44svh;
 				padding: 12px;
 			}
 
@@ -549,6 +550,7 @@
 			.board-right {
 				border-left: none;
 				border-top: 6px solid #3f2073;
+				padding: 12px;
 			}
 
 			.round-title {
@@ -561,6 +563,99 @@
 		}
 
 		@media (max-width: 680px) {
+			body {
+				overflow: auto;
+			}
+
+			.board-screen {
+				overflow-y: auto;
+			}
+
+			.board-layout {
+				height: auto;
+				min-height: 100svh;
+			}
+
+			.board-left {
+				min-height: 42svh;
+				padding: 6px;
+			}
+
+			.hex-board {
+				--hex-w: clamp(58px, 15vw, 76px);
+				--hex-h: clamp(66px, 16vw, 84px);
+				scale: 1;
+			}
+
+			.hex-row .hex-cell + .hex-cell {
+				margin-left: calc(var(--hex-w) * -0.11);
+			}
+
+			.hex-row + .hex-row {
+				margin-top: calc(var(--hex-h) * -0.28);
+			}
+
+			.hex-row.offset {
+				margin-left: calc(var(--hex-w) * 0.42);
+			}
+
+			.board-right {
+				padding: 10px 10px 14px;
+			}
+
+			.round-title {
+				font-size: 2.1rem;
+			}
+
+			.board-top {
+				margin-bottom: 8px;
+				padding-right: 46px;
+			}
+
+			.menu-icon-btn {
+				width: 40px;
+				height: 40px;
+				border-radius: 10px;
+			}
+
+			.question-panel {
+				padding: 10px;
+			}
+
+			.question-inner {
+				min-height: 145px;
+				padding: 10px;
+			}
+
+			.question-text {
+				font-size: 1.8rem;
+			}
+
+			.answer-line {
+				font-size: 0.95rem;
+				padding: 7px 9px;
+			}
+
+			.action-btn {
+				font-size: 1.7rem;
+				padding: 9px;
+			}
+
+			.score-list {
+				margin-top: 10px;
+			}
+
+			.score-item {
+				font-size: 2rem;
+				padding: 7px 10px;
+			}
+
+			.score-pill {
+				width: 26px;
+				height: 30px;
+				font-size: 1.8rem;
+			}
+
 			.splash-title-orbit {
 				width: min(90vw, 430px);
 			}
