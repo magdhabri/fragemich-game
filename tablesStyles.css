@@ -1,0 +1,65 @@
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 2px solid #333;
+  padding: 4px 8px;
+}
+
+/* obere linke Zelle (ohne Klasse/ID) */
+table tr:first-child th:first-child {
+  background-color: darkslategray;
+}
+
+/* Tage per ID */
+#montag {
+  background-color: red;
+  color: white;
+}
+
+#dienstag {
+  background-color: gold;
+}
+
+#mittwoch {
+  background-color: green;
+  color: white;
+}
+
+#donnerstag {
+  background-color: turquoise;
+}
+
+#freitag {
+  background-color: rebeccapurple;
+  color: white;
+}
+
+/* Zeiten per Klasse */
+th[class] {
+  background-color: orange;
+  color: #123456;
+}
+
+/* verbleibende Zellen mit Attributselektoren */
+td[rowspan="2"] {
+  background-color: lightpink;
+}
+
+td[rowspan="3"] {
+  background-color: lavender;
+}
+
+td[rowspan="4"] {
+  background-color: lightgreen;
+}
+
+td[colspan="5"] {
+  background-color: khaki;
+}
+
+td:not([rowspan]):not([colspan]) {
+  background-color: beige;
+}

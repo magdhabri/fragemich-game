@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGDNUMBER</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e1b4b, #581c87, #831843);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.container { width: 100%; max-width: 480px; }
+.title { text-align: center; margin-bottom: 32px; }
+.title h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #fde047, #f472b6, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+.title p { color: #e9d5ff; font-size: 1.1rem; margin-top: 8px; }
+.card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  padding: 32px;
+}
+.text-center { text-align: center; }
+.rules p { color: #f3e8ff; margin: 8px 0; line-height: 1.5; }
+.rules .label { font-weight: 700; color: white; font-size: 1.1rem; }
+.highlight { font-weight: 700; color: #fde047; }
+.hint-green { font-weight: 700; color: #86efac; }
+.hint-red { font-weight: 700; color: #fca5a5; }
+button {
+  cursor: pointer;
+  border: none;
+  font-weight: 700;
+  border-radius: 12px;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+button:hover { transform: scale(1.05); }
+.btn-start {
+  padding: 12px 32px;
+  background: linear-gradient(90deg, #ec4899, #9333ea);
+  color: white;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(236,72,153,0.3);
+  margin-top: 16px;
+}
+.btn-blue { padding: 12px 24px; background: #3b82f6; color: white; }
+.btn-blue:hover { background: #2563eb; }
+.btn-green { padding: 12px 24px; background: #10b981; color: white; }
+.btn-green:hover { background: #059669; }
+.btn-handoff-blue {
+  padding: 12px 32px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+}
+.btn-handoff-green {
+  padding: 12px 32px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.badge-blue { background: rgba(59,130,246,0.2); color: #93c5fd; }
+.badge-green { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+.dot-blue { background: #60a5fa; }
+.dot-green { background: #34d399; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+input[type="password"], input[type="number"] {
+  width: 140px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+  font-size: 1.2rem;
+  outline: none;
+}
+input[type="text"] {
+  width: 220px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+  font-size: 1.1rem;
+  outline: none;
+}
+input:focus { border-color: #f472b6; box-shadow: 0 0 0 3px rgba(244,114,182,0.3); }
+input::placeholder { color: rgba(196,181,253,0.5); }
+.input-row { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+.error { color: #f87171; font-size: 0.85rem; margin-top: 8px; }
+.secret-label { color: white; font-size: 1.1rem; margin: 12px 0; }
+.secret-sub { color: #c4b5fd; font-size: 0.85rem; }
+.handoff-icon { font-size: 3.5rem; margin-bottom: 8px; }
+.handoff-title { color: white; font-size: 1.3rem; font-weight: 700; margin: 8px 0; }
+.handoff-sub { color: #c4b5fd; margin-bottom: 16px; }
+.guess-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.guess-count { color: #c4b5fd; font-size: 0.85rem; }
+.guess-prompt { color: white; text-align: center; margin-bottom: 12px; }
+.guess-list { max-height: 200px; overflow-y: auto; margin-bottom: 12px; }
+.guess-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-bottom: 6px;
+}
+.guess-entry span:first-child { color: #e9d5ff; }
+.guess-entry .bold { font-weight: 700; color: white; }
+.hint-up { font-weight: 700; color: #4ade80; }
+.hint-down { font-weight: 700; color: #f87171; }
+.hint-correct { font-weight: 700; color: #fde047; }
+.winner-icon { font-size: 3.5rem; margin-bottom: 8px; }
+.winner-text { font-size: 1.5rem; font-weight: 700; color: #fde047; margin-bottom: 16px; }
+.results { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.result-card {
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid;
+  text-align: center;
+}
+.result-card.blue { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); }
+.result-card.green { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); }
+.result-card.winner-highlight {
+  background: rgba(234,179,8,0.2);
+  border-color: rgba(250,204,21,0.5);
+  box-shadow: 0 0 0 3px rgba(250,204,21,0.2);
+}
+.result-card .name-blue { color: #93c5fd; font-weight: 700; margin-bottom: 8px; }
+.result-card .name-green { color: #6ee7b7; font-weight: 700; margin-bottom: 8px; }
+.result-card .count { color: white; font-size: 2rem; font-weight: 700; }
+.result-card .label { color: #c4b5fd; font-size: 0.85rem; }
+.result-card .secret { color: #a78bfa; font-size: 0.75rem; margin-top: 4px; }
+.footer { text-align: center; color: rgba(168,85,247,0.4); font-size: 0.7rem; margin-top: 24px; }
+.hidden { display: none; }
+.name-field { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.name-label-blue { color: #93c5fd; font-weight: 600; font-size: 0.85rem; }
+.name-label-green { color: #6ee7b7; font-weight: 600; font-size: 0.85rem; }
+.names-form { display: flex; flex-direction: column; gap: 16px; }
+.result-box {
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 16px 0;
+}
+.result-box.up { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); }
+.result-box.down { background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.3); }
+.result-box .result-number { font-size: 2rem; font-weight: 900; color: white; }
+.result-box .result-hint { font-size: 1.3rem; font-weight: 700; margin-top: 8px; }
+.result-box.up .result-hint { color: #4ade80; }
+.result-box.down .result-hint { color: #f87171; }
+.range-row { display: flex; gap: 12px; justify-content: center; align-items: center; margin-top: 8px; }
+.range-row span { color: #c4b5fd; font-weight: 600; }
+.range-input { width: 80px !important; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">
+    <h1>MAGDNUMBER</h1>
+    <p>Das Zahlenratespiel f&uuml;r zwei Spieler</p>
+  </div>
+  <div class="card">
+    <!-- WELCOME -->
+    <div id="phase-welcome" class="text-center">
+      <div class="rules">
+        <p class="label">Spielregeln:</p>
+        <p>Jeder Spieler w&auml;hlt eine geheime Zahl in einem festgelegten Bereich.</p>
+        <p>Dann ratet ihr abwechselnd die Zahl des anderen Spielers.</p>
+        <p>Nach jedem Raten bekommt ihr einen Hinweis: <span class="hint-green">Gr&ouml;&szlig;er</span> oder <span class="hint-red">Kleiner</span>.</p>
+        <p>Wer <span class="highlight">zuerst</span> die Zahl des anderen err&auml;t, gewinnt!</p>
+      </div>
+      <button class="btn-start" onclick="startGame()">Spiel starten</button>
+    </div>
+    <!-- ENTER NAMES AND SETTINGS -->
+    <div id="phase-names" class="text-center hidden">
+      <p style="color:white; font-size:1.3rem; font-weight:700; margin-bottom:20px;">Einstellungen</p>
+      <div class="names-form">
+        <div class="name-field">
+          <span class="name-label-blue">Spieler 1</span>
+          <input type="text" id="name1-input" placeholder="Name eingeben..." onkeydown="if(event.key==='Enter')document.getElementById('name2-input').focus()">
+        </div>
+        <div class="name-field">
+          <span class="name-label-green">Spieler 2</span>
+          <input type="text" id="name2-input" placeholder="Name eingeben..." onkeydown="if(event.key==='Enter')document.getElementById('range-min-input').focus()">
+        </div>
+        <div class="name-field" style="margin-top:8px;">
+          <span style="color:#fde047; font-weight:600; font-size:0.85rem;">Zahlenbereich</span>
+          <div class="range-row">
+            <input type="number" id="range-min-input" class="range-input" value="1" min="1" onkeydown="if(event.key==='Enter')document.getElementById('range-max-input').focus()">
+            <span>bis</span>
+            <input type="number" id="range-max-input" class="range-input" value="100" min="2" onkeydown="if(event.key==='Enter')submitNames()">
+          </div>
+        </div>
+      </div>
+      <p id="names-error" class="error"></p>
+      <button class="btn-start" onclick="submitNames()">Weiter</button>
+    </div>
+    <!-- PLAYER 1 SECRET -->
+    <div id="phase-p1secret" class="text-center hidden">
+      <div class="badge badge-blue"><div class="dot dot-blue"></div><span id="p1secret-badge">Spieler 1</span></div>
+      <p class="secret-label">Gib deine geheime Zahl ein!</p>
+      <p class="secret-sub" id="p1secret-sub">Spieler 2, bitte wegschauen!</p>
+      <div class="input-row">
+        <input type="password" id="p1secret-input" placeholder="1 - 100" onkeydown="if(event.key==='Enter')submitSecret(1)">
+        <button class="btn-blue" onclick="submitSecret(1)">OK</button>
+      </div>
+      <p id="p1secret-error" class="error"></p>
+    </div>
+    <!-- PLAYER 2 SECRET -->
+    <div id="phase-p2secret" class="text-center hidden">
+      <div class="badge badge-green"><div class="dot dot-green"></div><span id="p2secret-badge">Spieler 2</span></div>
+      <p class="secret-label">Gib deine geheime Zahl ein!</p>
+      <p class="secret-sub" id="p2secret-sub">Spieler 1, bitte wegschauen!</p>
+      <div class="input-row">
+        <input type="password" id="p2secret-input" placeholder="1 - 100" onkeydown="if(event.key==='Enter')submitSecret(2)">
+        <button class="btn-green" onclick="submitSecret(2)">OK</button>
+      </div>
+      <p id="p2secret-error" class="error"></p>
+    </div>
+    <!-- GUESS RESULT (shown immediately after guessing) -->
+    <div id="phase-result" class="text-center hidden">
+      <div class="badge" id="result-badge"><div class="dot" id="result-dot"></div><span id="result-who"></span></div>
+      <div class="result-box" id="result-box">
+        <p class="result-number" id="result-guess-number"></p>
+        <p class="result-hint" id="result-hint-text"></p>
+      </div>
+      <button class="btn-start" id="result-continue-btn" onclick="continueAfterResult()">Weiter</button>
+    </div>
+    <!-- HANDOFF TO PLAYER 1 -->
+    <div id="phase-handoff1" class="text-center hidden">
+      <div class="handoff-icon">&#x1F504;</div>
+      <p class="handoff-title" id="handoff1-title">Spieler 1 ist dran!</p>
+      <p class="handoff-sub" id="handoff1-sub">Gebt das Ger&auml;t an Spieler 1 weiter.</p>
+      <button class="btn-handoff-blue" onclick="showGuessing(1)">Bereit zum Raten!</button>
+    </div>
+    <!-- HANDOFF TO PLAYER 2 -->
+    <div id="phase-handoff2" class="text-center hidden">
+      <div class="handoff-icon">&#x1F504;</div>
+      <p class="handoff-title" id="handoff2-title">Spieler 2 ist dran!</p>
+      <p class="handoff-sub" id="handoff2-sub">Gebt das Ger&auml;t an Spieler 2 weiter.</p>
+      <button class="btn-handoff-green" onclick="showGuessing(2)">Bereit zum Raten!</button>
+    </div>
+    <!-- PLAYER 1 GUESSING -->
+    <div id="phase-p1guess" class="hidden">
+      <div class="guess-header">
+        <div class="badge badge-blue"><div class="dot dot-blue"></div><span id="p1guess-badge">Spieler 1 r&auml;t</span></div>
+        <span class="guess-count" id="p1-attempt"></span>
+      </div>
+      <p class="guess-prompt" id="p1guess-prompt">Rate die Zahl von Spieler 2!</p>
+      <div class="guess-list" id="p1-guesslist"></div>
+      <div class="input-row">
+        <input type="number" id="p1guess-input" placeholder="1 - 100" min="1" max="100" onkeydown="if(event.key==='Enter')submitGuess(1)">
+        <button class="btn-blue" onclick="submitGuess(1)">Raten!</button>
+      </div>
+      <p id="p1guess-error" class="error text-center"></p>
+    </div>
+    <!-- PLAYER 2 GUESSING -->
+    <div id="phase-p2guess" class="hidden">
+      <div class="guess-header">
+        <div class="badge badge-green"><div class="dot dot-green"></div><span id="p2guess-badge">Spieler 2 r&auml;t</span></div>
+        <span class="guess-count" id="p2-attempt"></span>
+      </div>
+      <p class="guess-prompt" id="p2guess-prompt">Rate die Zahl von Spieler 1!</p>
+      <div class="guess-list" id="p2-guesslist"></div>
+      <div class="input-row">
+        <input type="number" id="p2guess-input" placeholder="1 - 100" min="1" max="100" onkeydown="if(event.key==='Enter')submitGuess(2)">
+        <button class="btn-green" onclick="submitGuess(2)">Raten!</button>
+      </div>
+      <p id="p2guess-error" class="error text-center"></p>
+    </div>
+    <!-- GAME OVER -->
+    <div id="phase-gameover" class="text-center hidden">
+      <div class="winner-icon">&#x1F3C6;</div>
+      <p class="winner-text" id="winner-msg"></p>
+      <div class="results">
+        <div class="result-card" id="result-p1">
+          <p class="name-blue" id="result-p1-name">Spieler 1</p>
+          <p class="count" id="result-p1-count"></p>
+          <p class="label">Versuche</p>
+          <p class="secret" id="result-p1-secret"></p>
+        </div>
+        <div class="result-card" id="result-p2">
+          <p class="name-green" id="result-p2-name">Spieler 2</p>
+          <p class="count" id="result-p2-count"></p>
+          <p class="label">Versuche</p>
+          <p class="secret" id="result-p2-secret"></p>
+        </div>
+      </div>
+      <button class="btn-start" onclick="resetGame()">Nochmal spielen!</button>
+    </div>
+  </div>
+  <p class="footer">MAGDNUMBER v1.0</p>
+</div>
+<script>
+var p1Secret = 0, p2Secret = 0;
+var p1Guesses = [], p2Guesses = [];
+var winner = 0;
+var p1Name = 'Spieler 1', p2Name = 'Spieler 2';
+var minRange = 1, maxRange = 100;
+var lastGuessPlayer = 0;
+var nextPhaseAfterResult = '';
+var phases = ['phase-welcome','phase-names','phase-p1secret','phase-p2secret','phase-result','phase-handoff1','phase-handoff2','phase-p1guess','phase-p2guess','phase-gameover'];
+function showPhase(id) {
+  phases.forEach(function(p) { document.getElementById(p).classList.add('hidden'); });
+  document.getElementById(id).classList.remove('hidden');
+}
+function startGame() {
+  showPhase('phase-names');
+  setTimeout(function() { document.getElementById('name1-input').focus(); }, 100);
+}
+function submitNames() {
+  var n1 = document.getElementById('name1-input').value.trim();
+  var n2 = document.getElementById('name2-input').value.trim();
+  var rMin = parseInt(document.getElementById('range-min-input').value, 10);
+  var rMax = parseInt(document.getElementById('range-max-input').value, 10);
+  var errorEl = document.getElementById('names-error');
+  if (!n1 || !n2) {
+    errorEl.textContent = 'Bitte gebt beide Namen ein!';
+    return;
+  }
+  if (isNaN(rMin) || isNaN(rMax) || rMin >= rMax || rMin < 0) {
+    errorEl.textContent = 'Bitte gebt einen g\u00fcltigen Zahlenbereich ein!';
+    return;
+  }
+  errorEl.textContent = '';
+  p1Name = n1;
+  p2Name = n2;
+  minRange = rMin;
+  maxRange = rMax;
+  var rangeText = minRange + ' - ' + maxRange;
+  document.getElementById('p1secret-badge').textContent = p1Name;
+  document.getElementById('p1secret-sub').textContent = p2Name + ', bitte wegschauen!';
+  document.getElementById('p2secret-badge').textContent = p2Name;
+  document.getElementById('p2secret-sub').textContent = p1Name + ', bitte wegschauen!';
+  document.getElementById('p1secret-input').placeholder = rangeText;
+  document.getElementById('p2secret-input').placeholder = rangeText;
+  document.getElementById('handoff1-title').textContent = p1Name + ' ist dran!';
+  document.getElementById('handoff1-sub').textContent = 'Gebt das Ger\u00e4t an ' + p1Name + ' weiter.';
+  document.getElementById('handoff2-title').textContent = p2Name + ' ist dran!';
+  document.getElementById('handoff2-sub').textContent = 'Gebt das Ger\u00e4t an ' + p2Name + ' weiter.';
+  document.getElementById('p1guess-badge').textContent = p1Name + ' r\u00e4t';
+  document.getElementById('p1guess-prompt').textContent = 'Rate die Zahl von ' + p2Name + '!';
+  document.getElementById('p2guess-badge').textContent = p2Name + ' r\u00e4t';
+  document.getElementById('p2guess-prompt').textContent = 'Rate die Zahl von ' + p1Name + '!';
+  document.getElementById('p1guess-input').placeholder = rangeText;
+  document.getElementById('p1guess-input').min = minRange;
+  document.getElementById('p1guess-input').max = maxRange;
+  document.getElementById('p2guess-input').placeholder = rangeText;
+  document.getElementById('p2guess-input').min = minRange;
+  document.getElementById('p2guess-input').max = maxRange;
+  showPhase('phase-p1secret');
+  setTimeout(function() { document.getElementById('p1secret-input').focus(); }, 100);
+}
+function submitSecret(player) {
+  var input = document.getElementById(player === 1 ? 'p1secret-input' : 'p2secret-input');
+  var errorEl = document.getElementById(player === 1 ? 'p1secret-error' : 'p2secret-error');
+  var num = parseInt(input.value, 10);
+  if (isNaN(num) || num < minRange || num > maxRange) {
+    errorEl.textContent = 'Bitte gib eine Zahl zwischen ' + minRange + ' und ' + maxRange + ' ein!';
+    return;
+  }
+  errorEl.textContent = '';
+  if (player === 1) {
+    p1Secret = num;
+    input.value = '';
+    showPhase('phase-p2secret');
+    setTimeout(function() { document.getElementById('p2secret-input').focus(); }, 100);
+  } else {
+    p2Secret = num;
+    input.value = '';
+    showPhase('phase-handoff1');
+  }
+}
+function showGuessing(player) {
+  if (player === 1) {
+    document.getElementById('p1-attempt').textContent = 'Versuch ' + (p1Guesses.length + 1);
+    renderGuesses(1);
+    showPhase('phase-p1guess');
+    setTimeout(function() { document.getElementById('p1guess-input').focus(); }, 100);
+  } else {
+    document.getElementById('p2-attempt').textContent = 'Versuch ' + (p2Guesses.length + 1);
+    renderGuesses(2);
+    showPhase('phase-p2guess');
+    setTimeout(function() { document.getElementById('p2guess-input').focus(); }, 100);
+  }
+}
+function renderGuesses(player) {
+  var list = document.getElementById(player === 1 ? 'p1-guesslist' : 'p2-guesslist');
+  var guesses = player === 1 ? p1Guesses : p2Guesses;
+  list.innerHTML = guesses.map(function(g, i) {
+    var hintClass = g.hint === 'Gr\u00f6\u00dfer!' ? 'hint-up' : g.hint === 'Kleiner!' ? 'hint-down' : 'hint-correct';
+    var icon = g.hint === 'Gr\u00f6\u00dfer!' ? '\u2B06\uFE0F ' : g.hint === 'Kleiner!' ? '\u2B07\uFE0F ' : '\uD83C\uDF89 ';
+    return '<div class="guess-entry"><span>Versuch ' + (i+1) + ': <span class="bold">' + g.guess + '</span></span><span class="' + hintClass + '">' + icon + g.hint + '</span></div>';
+  }).join('');
+  list.scrollTop = list.scrollHeight;
+}
+function showResult(player, guess, hint) {
+  var badge = document.getElementById('result-badge');
+  var dot = document.getElementById('result-dot');
+  var who = document.getElementById('result-who');
+  var box = document.getElementById('result-box');
+  var numEl = document.getElementById('result-guess-number');
+  var hintEl = document.getElementById('result-hint-text');
+  if (player === 1) {
+    badge.className = 'badge badge-blue';
+    dot.className = 'dot dot-blue';
+    who.textContent = p1Name;
+  } else {
+    badge.className = 'badge badge-green';
+    dot.className = 'dot dot-green';
+    who.textContent = p2Name;
+  }
+  numEl.textContent = guess;
+  if (hint === 'Gr\u00f6\u00dfer!') {
+    box.className = 'result-box up';
+    hintEl.textContent = '\u2B06\uFE0F Gr\u00f6\u00dfer!';
+  } else {
+    box.className = 'result-box down';
+    hintEl.textContent = '\u2B07\uFE0F Kleiner!';
+  }
+  showPhase('phase-result');
+}
+function continueAfterResult() {
+  if (nextPhaseAfterResult === 'phase-handoff2') {
+    showPhase('phase-handoff2');
+  } else {
+    showPhase('phase-handoff1');
+  }
+}
+function submitGuess(player) {
+  var input = document.getElementById(player === 1 ? 'p1guess-input' : 'p2guess-input');
+  var errorEl = document.getElementById(player === 1 ? 'p1guess-error' : 'p2guess-error');
+  var guess = parseInt(input.value, 10);
+  if (isNaN(guess) || guess < minRange || guess > maxRange) {
+    errorEl.textContent = 'Bitte gib eine Zahl zwischen ' + minRange + ' und ' + maxRange + ' ein!';
+    return;
+  }
+  errorEl.textContent = '';
+  input.value = '';
+  var target = player === 1 ? p2Secret : p1Secret;
+  var hint = '';
+  if (guess === target) {
+    hint = 'RICHTIG!';
+    winner = player;
+    if (player === 1) { p1Guesses.push({guess: guess, hint: hint}); }
+    else { p2Guesses.push({guess: guess, hint: hint}); }
+    showGameOver();
+  } else if (guess < target) {
+    hint = 'Gr\u00f6\u00dfer!';
+    if (player === 1) {
+      p1Guesses.push({guess: guess, hint: hint});
+      renderGuesses(1);
+      document.getElementById('p1-attempt').textContent = 'Versuch ' + (p1Guesses.length + 1);
+      nextPhaseAfterResult = 'phase-handoff2';
+    } else {
+      p2Guesses.push({guess: guess, hint: hint});
+      renderGuesses(2);
+      document.getElementById('p2-attempt').textContent = 'Versuch ' + (p2Guesses.length + 1);
+      nextPhaseAfterResult = 'phase-handoff1';
+    }
+    showResult(player, guess, hint);
+  } else {
+    hint = 'Kleiner!';
+    if (player === 1) {
+      p1Guesses.push({guess: guess, hint: hint});
+      renderGuesses(1);
+      document.getElementById('p1-attempt').textContent = 'Versuch ' + (p1Guesses.length + 1);
+      nextPhaseAfterResult = 'phase-handoff2';
+    } else {
+      p2Guesses.push({guess: guess, hint: hint});
+      renderGuesses(2);
+      document.getElementById('p2-attempt').textContent = 'Versuch ' + (p2Guesses.length + 1);
+      nextPhaseAfterResult = 'phase-handoff1';
+    }
+    showResult(player, guess, hint);
+  }
+}
+function showGameOver() {
+  var winnerName = winner === 1 ? p1Name : p2Name;
+  document.getElementById('winner-msg').textContent = winnerName + ' gewinnt!';
+  document.getElementById('result-p1-count').textContent = p1Guesses.length;
+  document.getElementById('result-p2-count').textContent = p2Guesses.length;
+  document.getElementById('result-p1-secret').textContent = 'Geheime Zahl: ' + p1Secret;
+  document.getElementById('result-p2-secret').textContent = 'Geheime Zahl: ' + p2Secret;
+  document.getElementById('result-p1-name').textContent = p1Name + (winner === 1 ? ' \uD83C\uDFC6' : '');
+  document.getElementById('result-p2-name').textContent = p2Name + (winner === 2 ? ' \uD83C\uDFC6' : '');
+  var r1 = document.getElementById('result-p1');
+  var r2 = document.getElementById('result-p2');
+  r1.className = 'result-card ' + (winner === 1 ? 'winner-highlight' : 'blue');
+  r2.className = 'result-card ' + (winner === 2 ? 'winner-highlight' : 'green');
+  showPhase('phase-gameover');
+}
+function resetGame() {
+  p1Secret = 0; p2Secret = 0;
+  p1Guesses = []; p2Guesses = [];
+  winner = 0;
+  p1Name = 'Spieler 1'; p2Name = 'Spieler 2';
+  minRange = 1; maxRange = 100;
+  nextPhaseAfterResult = '';
+  document.getElementById('p1-guesslist').innerHTML = '';
+  document.getElementById('p2-guesslist').innerHTML = '';
+  document.getElementById('p1secret-input').value = '';
+  document.getElementById('p2secret-input').value = '';
+  document.getElementById('p1guess-input').value = '';
+  document.getElementById('p2guess-input').value = '';
+  document.getElementById('name1-input').value = '';
+  document.getElementById('name2-input').value = '';
+  document.getElementById('range-min-input').value = '1';
+  document.getElementById('range-max-input').value = '100';
+  document.getElementById('p1secret-error').textContent = '';
+  document.getElementById('p2secret-error').textContent = '';
+  document.getElementById('p1guess-error').textContent = '';
+  document.getElementById('p2guess-error').textContent = '';
+  document.getElementById('names-error').textContent = '';
+  showPhase('phase-welcome');
+}
+</script>
+</body>
+</html>

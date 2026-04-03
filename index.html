@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Fragemich</title>
+	<style>
+		:root {
+			--bg-1: #5b2ea6;
+			--bg-2: #6d37b9;
+			--accent-yellow: #ffe100;
+			--accent-cyan: #3bc7d7;
+			--accent-red: #f14652;
+			--ink: #21113f;
+			--panel: rgba(255, 255, 255, 0.16);
+			--panel-border: rgba(255, 255, 255, 0.24);
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+			color: #ffffff;
+			background:
+				radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 38%, rgba(255, 255, 255, 0) 70%),
+				linear-gradient(160deg, var(--bg-1), var(--bg-2));
+			overflow: hidden;
+		}
+
+		.screen {
+			position: fixed;
+			inset: 0;
+			display: grid;
+			place-items: center;
+			transition: opacity 500ms ease, transform 500ms ease;
+		}
+
+		.screen.hidden {
+			opacity: 0;
+			pointer-events: none;
+			transform: scale(1.02);
+		}
+
+		.splash-wrap {
+			text-align: center;
+			padding: 24px;
+			width: min(92vw, 640px);
+		}
+
+		.splash-title-orbit {
+			position: relative;
+			width: min(80vw, 500px);
+			aspect-ratio: 1 / 1;
+			margin: 0 auto;
+			font-weight: 900;
+			letter-spacing: 0.6px;
+			text-transform: uppercase;
+			filter: drop-shadow(0 8px 0 rgba(33, 17, 63, 0.9));
+			animation: title-pop 1.2s ease-out forwards;
+			transform: translateY(28px) scale(0.92) rotate(-1deg);
+			opacity: 0;
+			user-select: none;
+		}
+
+		.title-word {
+			position: absolute;
+			line-height: 0.95;
+			white-space: nowrap;
+			z-index: 2;
+			text-shadow: 0 7px 0 rgba(33, 17, 63, 0.95);
+		}
+
+		.title-word.line-1 {
+			top: 1%;
+			left: 50%;
+			transform: translateX(-50%);
+			color: var(--accent-yellow);
+			font-size: clamp(2.2rem, 8.4vw, 5.2rem);
+		}
+
+		.title-word.line-2 {
+			top: 49%;
+			left: -9%;
+			transform: translateY(-50%) rotate(-8deg);
+			color: var(--accent-cyan);
+			font-size: clamp(1.9rem, 7vw, 4.4rem);
+		}
+
+		.title-word.line-3 {
+			top: 84%;
+			right: -9%;
+			transform: translateY(-50%);
+			color: var(--accent-red);
+			font-size: clamp(2.2rem, 8.2vw, 5rem);
+		}
+
+		.loading-line {
+			width: min(56vw, 320px);
+			height: 6px;
+			margin: 40px auto 0;
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.18);
+			overflow: hidden;
+		}
+
+		.loading-line::before {
+			content: "";
+			display: block;
+			height: 100%;
+			width: 100%;
+			transform-origin: left;
+			animation: fill 2.2s linear forwards;
+			background: linear-gradient(90deg, #ffffff66, #ffffffcc);
+		}
+
+		.splash-photo {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 1;
+			width: min(44vw, 275px);
+			height: auto;
+			aspect-ratio: 1 / 1;
+			object-fit: cover;
+			border-radius: 50%;
+			border: 2px solid rgba(255, 255, 255, 0.35);
+			box-shadow: 0 12px 30px rgba(18, 7, 45, 0.45);
+		}
+
+		.menu-wrap {
+			width: min(92vw, 480px);
+			background: var(--panel);
+			border: 1px solid var(--panel-border);
+			border-radius: 20px;
+			padding: 28px;
+			backdrop-filter: blur(6px);
+			box-shadow: 0 18px 50px rgba(10, 3, 30, 0.35);
+			text-align: center;
+		}
+
+		.menu-logo {
+			font-size: clamp(2rem, 8vw, 3.4rem);
+			font-weight: 900;
+			color: var(--accent-yellow);
+			text-shadow: 0 5px 0 rgba(33, 17, 63, 0.8);
+			margin-bottom: 18px;
+		}
+
+		.menu-sub {
+			color: #f3ebff;
+			margin-bottom: 24px;
+			font-size: 1rem;
+		}
+
+		.menu-button {
+			display: block;
+			width: 100%;
+			border: none;
+			border-radius: 14px;
+			padding: 13px;
+			margin-top: 10px;
+			font-size: 1.02rem;
+			font-weight: 800;
+			color: var(--ink);
+			cursor: pointer;
+			transition: transform 180ms ease, filter 180ms ease;
+		}
+
+		.menu-button:hover {
+			transform: translateY(-2px);
+			filter: brightness(1.04);
+		}
+
+		.start-btn { background: var(--accent-yellow); }
+		.questions-btn { background: var(--accent-cyan); }
+		.about-btn { background: #f2f2f2; }
+
+		.questions-mode-wrap {
+			direction: ltr;
+			width: min(92vw, 560px);
+			background: rgba(36, 9, 70, 0.9);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			border-radius: 22px;
+			padding: clamp(20px, 4vw, 36px);
+			box-shadow: 0 24px 55px rgba(9, 2, 23, 0.48);
+			text-align: center;
+		}
+
+		.questions-mode-title {
+			font-size: clamp(1.8rem, 4vw, 2.5rem);
+			font-weight: 900;
+			color: var(--accent-yellow);
+			margin-bottom: 22px;
+		}
+
+		.questions-mode-text {
+			font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+			line-height: 1.55;
+			color: #ffffff;
+			font-weight: 700;
+			margin: 0 auto 28px;
+			max-width: 90%;
+		}
+
+		.qm-button {
+			display: block;
+			width: min(100%, 420px);
+			margin: 12px auto;
+			border: none;
+			border-radius: 14px;
+			padding: 14px;
+			font-size: clamp(1rem, 2.1vw, 1.2rem);
+			font-weight: 900;
+			color: #2f2645;
+			cursor: pointer;
+			transition: transform 180ms ease, filter 180ms ease;
+		}
+
+		.qm-button:hover {
+			transform: translateY(-2px);
+			filter: brightness(1.03);
+		}
+
+		.qm-open,
+		.qm-side {
+			background: var(--accent-yellow);
+		}
+
+		.qm-back {
+			background: #f0f0f0;
+		}
+
+		.questions-mode-note {
+			margin-top: clamp(26px, 5vw, 44px);
+			font-size: clamp(1rem, 2vw, 1.2rem);
+			font-weight: 800;
+			color: var(--accent-yellow);
+			line-height: 1.5;
+		}
+
+		.board-screen {
+			background: #5f35a5;
+			padding: 0;
+		}
+
+		.board-layout {
+			display: grid;
+			grid-template-columns: 2.2fr 1fr;
+			width: 100%;
+			height: 100vh;
+		}
+
+		.board-left {
+			position: relative;
+			overflow: hidden;
+			background: #ff7a3b;
+			display: grid;
+			place-items: center;
+			padding: 12px;
+		}
+
+		.board-left::before,
+		.board-left::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: #38be18;
+			z-index: 0;
+			pointer-events: none;
+		}
+
+		.board-left::before {
+			clip-path: polygon(0 0, 100% 0, 100% 10%, 66% 27%, 34% 27%, 0 10%);
+		}
+
+		.board-left::after {
+			clip-path: polygon(0 100%, 100% 100%, 100% 90%, 66% 73%, 34% 73%, 0 90%);
+		}
+
+		.hex-board {
+			position: relative;
+			z-index: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			--hex-border: 8px;
+			--hex-w: clamp(92px, 6.8vw, 122px);
+			--hex-h: clamp(102px, 7.4vw, 132px);
+			gap: 0;
+			padding-top: 0;
+			width: fit-content;
+			scale: 0.96;
+		}
+
+		.hex-row {
+			display: flex;
+			gap: 0;
+		}
+
+		.hex-row .hex-cell + .hex-cell {
+			margin-left: calc(var(--hex-w) * -0.12);
+		}
+
+		.hex-row + .hex-row {
+			margin-top: calc(var(--hex-h) * -0.30);
+		}
+
+		.hex-row.offset {
+			margin-left: calc(var(--hex-w) * 0.44);
+		}
+
+		.hex-cell {
+			width: var(--hex-w);
+			height: var(--hex-h);
+			position: relative;
+			isolation: isolate;
+			clip-path: polygon(50% 2%, 95% 25%, 95% 75%, 50% 98%, 5% 75%, 5% 25%);
+			border: none;
+			background: #7442b7;
+			display: grid;
+			place-items: center;
+			font-size: clamp(2.45rem, 3.3vw, 3.35rem);
+			font-weight: 900;
+			color: #7b47b7;
+			user-select: none;
+			line-height: 1;
+			cursor: pointer;
+			transition: transform 120ms ease;
+		}
+
+		.hex-cell:hover {
+			transform: translateY(-1px);
+		}
+
+		.hex-cell::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			clip-path: polygon(50% 2%, 95% 25%, 95% 75%, 50% 98%, 5% 75%, 5% 25%);
+			background: #f2f2f2;
+			transform: scale(0.86);
+			transform-origin: center;
+		}
+
+		.hex-cell.active {
+			color: #5d2da8;
+		}
+
+		.hex-cell.active::before {
+			background: #ffe100;
+		}
+
+		.hex-cell.active-green {
+			color: #2d5a1e;
+		}
+
+		.hex-cell.active-green::before {
+			background: #38be18;
+		}
+
+		.hex-cell.active-orange {
+			color: #8b4513;
+		}
+
+		.hex-cell.active-orange::before {
+			background: #ff7a3b;
+		}
+
+		.board-right {
+			background: #5f35a5;
+			border-left: 6px solid #3f2073;
+			padding: 16px 14px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.board-top {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: flex-start;
+			margin-bottom: 12px;
+			padding-right: 58px;
+		}
+
+		.round-title {
+			font-size: clamp(2rem, 3vw, 3.2rem);
+			font-weight: 900;
+			line-height: 0.95;
+			text-align: center;
+			text-shadow: 0 5px 0 rgba(26, 12, 51, 0.9);
+		}
+
+		.round-title .line-red { color: #f34a4c; display: block; }
+		.round-title .line-yellow { color: var(--accent-yellow); display: block; margin-top: 6px; }
+
+		.menu-icon-btn {
+			position: absolute;
+			top: 0;
+			right: 0;
+			border: none;
+			width: 48px;
+			height: 48px;
+			border-radius: 12px;
+			background: #efefef;
+			color: #555;
+			font-size: 1.4rem;
+			font-weight: 900;
+			cursor: pointer;
+		}
+
+		.question-panel {
+			background: #2d0a50;
+			border: 2px solid rgba(255, 255, 255, 0.18);
+			border-radius: 24px;
+			padding: 16px;
+		}
+
+		.question-inner {
+			position: relative;
+			min-height: 230px;
+			border-radius: 18px;
+			background: rgba(120, 92, 153, 0.35);
+			border: 2px solid rgba(255, 255, 255, 0.12);
+			display: grid;
+			place-items: center;
+			padding: 16px;
+			text-align: center;
+		}
+
+		.question-badge {
+			position: absolute;
+			top: -28px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 52px;
+			height: 58px;
+			background: #f4f4f4;
+			border: 3px solid #8760c0;
+			clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+			display: grid;
+			place-items: center;
+			color: #7c4fba;
+			font-size: 2rem;
+			font-weight: 900;
+		}
+
+		.question-text {
+			font-size: clamp(1.25rem, 1.7vw, 1.75rem);
+			font-weight: 800;
+			line-height: 1.4;
+		}
+
+		.answer-line {
+			margin-top: 10px;
+			background: rgba(31, 132, 52, 0.45);
+			border: 2px solid rgba(107, 220, 88, 0.7);
+			border-radius: 12px;
+			padding: 8px 12px;
+			text-align: center;
+			font-size: 1.1rem;
+			font-weight: 800;
+			color: #e4ffd8;
+		}
+
+		.question-actions {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			margin-top: 14px;
+		}
+
+		.action-btn {
+			border: none;
+			border-radius: 13px;
+			padding: 11px;
+			font-size: 1.7rem;
+			font-weight: 900;
+			color: #2f2645;
+			cursor: pointer;
+		}
+
+		.action-btn.answer { background: var(--accent-cyan); }
+		.action-btn.next { background: var(--accent-yellow); }
+
+		.score-list {
+			margin-top: 14px;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.score-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			border-radius: 999px;
+			padding: 8px 12px;
+			font-weight: 900;
+			font-size: 1.9rem;
+			line-height: 1;
+			border: 2px solid rgba(255, 255, 255, 0.24);
+		}
+
+		.score-item.team-1 {
+			background: rgba(22, 108, 22, 0.35);
+			color: #36d51a;
+		}
+
+		.score-item.team-2 {
+			background: rgba(115, 41, 0, 0.35);
+			color: #ff8b35;
+		}
+
+		.score-pill {
+			width: 32px;
+			height: 36px;
+			background: currentColor;
+			clip-path: polygon(25% 7%, 75% 7%, 98% 50%, 75% 93%, 25% 93%, 2% 50%);
+			display: grid;
+			place-items: center;
+			font-size: 1.5rem;
+			color: #2a1f45;
+		}
+
+		@media (max-width: 1080px) {
+			.board-layout {
+				grid-template-columns: 1fr;
+				overflow: auto;
+				height: 100vh;
+			}
+
+			.board-left {
+				min-height: 58vh;
+				padding: 12px;
+			}
+
+			.hex-row.offset {
+				margin-left: calc(var(--hex-w) * 0.38);
+			}
+
+			.board-right {
+				border-left: none;
+				border-top: 6px solid #3f2073;
+			}
+
+			.round-title {
+				font-size: 2.4rem;
+			}
+
+			.board-top {
+				padding-right: 52px;
+			}
+		}
+
+		@media (max-width: 680px) {
+			.splash-title-orbit {
+				width: min(90vw, 430px);
+			}
+
+			.title-word.line-2 {
+				left: -4%;
+			}
+
+			.title-word.line-3 {
+				right: -4%;
+			}
+		}
+
+		@keyframes title-pop {
+			0% {
+				transform: translateY(28px) scale(0.92) rotate(-1deg);
+				opacity: 0;
+			}
+			55% {
+				transform: translateY(-8px) scale(1.05) rotate(1deg);
+				opacity: 1;
+			}
+			100% {
+				transform: translateY(0) scale(1) rotate(0deg);
+				opacity: 1;
+			}
+		}
+
+		@keyframes fill {
+			from { transform: scaleX(0); }
+			to { transform: scaleX(1); }
+		}
+	</style>
+</head>
+<body>
+	<section id="splash-screen" class="screen">
+		<div class="splash-wrap">
+			<h1 class="splash-title-orbit" aria-label="Frage mich jetzt">
+				<span class="title-word line-1">Frage</span>
+				<span class="title-word line-2">Mich</span>
+				<span class="title-word line-3">Jetzt</span>
+				<img class="splash-photo" src="C:/Users/alaxl/Downloads/Magd/webTech/Bild.png" alt="Startbild" loading="eager">
+			</h1>
+			<div class="loading-line" aria-hidden="true"></div>
+		</div>
+	</section>
+
+	<section id="menu-screen" class="screen hidden" aria-hidden="true">
+		<div class="menu-wrap">
+			<h2 class="menu-logo">Fragemich</h2>
+			<p class="menu-sub">Das ist dein zweites Fenster. Hier bauen wir im n&auml;chsten Schritt das Hauptmen&uuml; aus.</p>
+			<button id="start-button" class="menu-button start-btn">Spiel starten</button>
+			<button class="menu-button questions-btn">Fragenkatalog</button>
+			<button class="menu-button about-btn">Mehr Infos</button>
+		</div>
+	</section>
+
+	<section id="questions-mode-screen" class="screen hidden" aria-hidden="true">
+		<div class="questions-mode-wrap">
+			<h2 class="questions-mode-title">Fragenmodus</h2>
+			<p class="questions-mode-text">
+				M&ouml;chtest du die Fragen neben dem Spielfeld anzeigen oder separat &uuml;ber ein Fragenportal auf einem zweiten Ger&auml;t &ouml;ffnen und im Spielfeld ausblenden?
+			</p>
+			<button class="qm-button qm-open">Fragenportal auf einem anderen Ger&auml;t &ouml;ffnen</button>
+			<button id="show-board-button" class="qm-button qm-side">Fragen neben dem Spielfeld anzeigen</button>
+			<button id="back-to-menu" class="qm-button qm-back">Zur&uuml;ck</button>
+			<p class="questions-mode-note">
+				Diese Auswahl kann nur durch Abbruch der Runde und R&uuml;ckkehr ins Hauptmen&uuml; ge&auml;ndert werden.
+			</p>
+		</div>
+	</section>
+
+	<section id="board-screen" class="screen board-screen hidden" aria-hidden="true">
+		<div class="board-layout">
+			<div class="board-left">
+				<div class="hex-board" aria-label="Buchstaben auf dem Spielfeld">
+					<div class="hex-row">
+						<div class="hex-cell">A</div>
+						<div class="hex-cell">B</div>
+						<div class="hex-cell">C</div>
+						<div class="hex-cell">D</div>
+						<div class="hex-cell">E</div>
+					</div>
+					<div class="hex-row offset">
+						<div class="hex-cell">F</div>
+						<div class="hex-cell">G</div>
+						<div class="hex-cell">H</div>
+						<div class="hex-cell">I</div>
+						<div class="hex-cell">J</div>
+					</div>
+					<div class="hex-row">
+						<div class="hex-cell">K</div>
+						<div class="hex-cell">L</div>
+						<div class="hex-cell">M</div>
+						<div class="hex-cell">N</div>
+						<div class="hex-cell">O</div>
+					</div>
+					<div class="hex-row offset">
+						<div class="hex-cell">P</div>
+						<div class="hex-cell">Q</div>
+						<div class="hex-cell">R</div>
+						<div class="hex-cell">S</div>
+						<div class="hex-cell">T</div>
+					</div>
+					<div class="hex-row">
+						<div class="hex-cell">U</div>
+						<div class="hex-cell">V</div>
+						<div class="hex-cell">W</div>
+						<div class="hex-cell">X</div>
+						<div class="hex-cell">Y</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="board-right">
+				<div class="board-top">
+					<h2 class="round-title">
+						<span class="line-red">Erste</span>
+						<span class="line-yellow">Runde</span>
+					</h2>
+					<button id="board-back-button" class="menu-icon-btn" aria-label="Zur&uuml;ck zum Fragenmodus">&#8801;</button>
+				</div>
+
+				<div class="question-panel">
+					<div class="question-inner">
+						<div id="question-badge" class="question-badge">!</div>
+						<p id="question-text" class="question-text">W&auml;hle einen Buchstaben, um eine Frage anzuzeigen.</p>
+					</div>
+					<p id="answer-line" class="answer-line hidden"></p>
+					<div class="question-actions">
+						<button id="new-question-button" class="action-btn next">Neue Frage</button>
+						<button id="show-answer-button" class="action-btn answer">Antwort zeigen</button>
+					</div>
+				</div>
+
+				<div class="score-list">
+					<div id="team-1-btn" class="score-item team-1" style="cursor: pointer;">
+						<span>Team 1</span>
+						<span class="score-pill">0</span>
+					</div>
+					<div id="team-2-btn" class="score-item team-2" style="cursor: pointer;">
+						<span>Team 2</span>
+						<span class="score-pill">0</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="win-screen" class="screen hidden" aria-hidden="true" style="background: #5f35a5;">
+		<div style="text-align: center; padding: 40px;">
+			<h2 style="font-size: 4rem; font-weight: 900; margin-bottom: 20px; line-height: 1; text-shadow: 0 5px 0 rgba(26, 12, 51, 0.9);"><span id="win-team-name"></span> <span style="display: block; font-size: 6rem; margin-top: 20px;">🎉</span></h2>
+			<p id="win-message" style="font-size: 2rem; font-weight: 800; margin-bottom: 40px; color: #ffffff;"></p>
+			<button id="next-round-button" style="border: none; border-radius: 16px; padding: 18px 40px; font-size: 1.6rem; font-weight: 900; background: var(--accent-yellow); color: #2f2645; cursor: pointer; transition: transform 180ms ease;">Zur nächsten Runde →</button>
+		</div>
+	</section>
+
+	<script>
+		const splashScreen = document.getElementById("splash-screen");
+		const menuScreen = document.getElementById("menu-screen");
+		const questionsModeScreen = document.getElementById("questions-mode-screen");
+		const boardScreen = document.getElementById("board-screen");
+		const winScreen = document.getElementById("win-screen");
+		const startButton = document.getElementById("start-button");
+		const backToMenuButton = document.getElementById("back-to-menu");
+		const showBoardButton = document.getElementById("show-board-button");
+		const boardBackButton = document.getElementById("board-back-button");
+		const hexCells = Array.from(document.querySelectorAll(".hex-cell"));
+		const questionTextEl = document.getElementById("question-text");
+		const questionBadgeEl = document.getElementById("question-badge");
+		const answerLineEl = document.getElementById("answer-line");
+		const newQuestionButton = document.getElementById("new-question-button");
+		const showAnswerButton = document.getElementById("show-answer-button");
+		const team1Btn = document.getElementById("team-1-btn");
+		const team2Btn = document.getElementById("team-2-btn");
+		const roundTitleRedEl = document.querySelector(".round-title .line-red");
+		const team1ScoreEl = team1Btn.querySelector(".score-pill");
+		const team2ScoreEl = team2Btn.querySelector(".score-pill");
+
+		const QUESTION_BANK_RAW = `Hauptstadt Deutschland? — Berlin
+Was ist das Groesste Land? — Russland
+Was ist der Hoechste Berg? — Everest
+Groesster Ozean? — Pazifik
+Schnellster Mensch? — Bolt
+Erster Mensch Mond? — Armstrong
+Hauptstadt Frankreich? — Paris
+Hauptstadt Spanien? — Madrid
+Hauptstadt Italien? — Rom
+Hauptstadt Japan? — Tokio
+Groesster Kontinent? — Asien
+Laengster Fluss? — Nil
+Hauptstadt USA? — Washington
+Praesident USA? — Biden
+Groesste Insel? — Groenland
+Groesster See? — Kaspisches
+Hauptstadt Kanada? — Ottawa
+Hauptstadt China? — Peking
+Hauptstadt Russland? — Moskau
+Hauptstadt Indien? — Neu-Delhi
+Groesste Wueste? — Sahara
+Hauptstadt Aegypten? — Kairo
+Fussball WM Sieger 2022? — Argentinien
+Basketball Legende? — Jordan
+Tennis Nummer Eins? — Djokovic
+Formel1 Rekord? — Hamilton
+Groesstes Stadion? — Rungrado
+Olympische Spiele Ursprung? — Griechenland
+Hauptstadt Brasilien? — Brasilia
+Hauptstadt Argentinien? — Buenos Aires
+Groesste Religion? — Christentum
+Islam Prophet? — Mohammed
+Bibel Sprache? — Hebraeisch
+Hindu Gott? — Brahma
+Buddha Herkunft? — Indien
+Judentum Buch? — Tora
+Christentum Symbol? — Kreuz
+Islam Buch? — Koran
+Groesstes Tier? — Blauwal
+Schnellstes Tier? — Gepard
+Groesster Planet? — Jupiter
+Kleinster Planet? — Merkur
+Roter Planet? — Mars
+Erde Satellit? — Mond
+Sonne Stern? — Ja
+Wasser Formel? — H2O
+Salz Formel? — NaCl
+Lichtgeschwindigkeit? — 300000 km/s
+Erfinder Telefon? — Bell
+Erfinder Gluehbirne? — Edison
+Hauptstadt Tuerkei? — Ankara
+Hauptstadt Griechenland? — Athen
+Hauptstadt Niederlande? — Amsterdam
+Hauptstadt Belgien? — Bruessel
+Hauptstadt Schweiz? — Bern
+Hauptstadt Oesterreich? — Wien
+Hauptstadt Polen? — Warschau
+Hauptstadt Schweden? — Stockholm
+Hauptstadt Norwegen? — Oslo
+Hauptstadt Finnland? — Helsinki
+Groesster Vulkan? — Mauna Loa
+Tiefster Punkt? — Marianengraben
+Erste Zivilisation? — Sumer
+Roemischer Kaiser? — Caesar
+Franzoesische Revolution? — 1789
+Zweiter Weltkrieg Ende? — 1945
+EU Gruendung? — 1993
+NATO Zweck? — Verteidigung
+UNO Sitz? — New York
+Euro Einfuehrung? — 2002
+Schnellster Vogel? — Falke
+Groesster Vogel? — Strauss
+Laengstes Tier? — Blauwal
+Giftigste Schlange? — Inlandtaipan
+Groesster Wald? — Amazonas
+Amazonas Land? — Brasilien
+Sahara Kontinent? — Afrika
+Alpen Lage? — Europa
+Himalaya Lage? — Asien
+Nordpol Ort? — Arktis
+Suedpol Ort? — Antarktis
+Internet Erfinder? — Berners-Lee
+Computer Firma? — IBM
+iPhone Hersteller? — Apple
+Windows Firma? — Microsoft
+Tesla Gruender? — Musk
+Facebook Gruender? — Zuckerberg
+Google Gruender? — Page
+YouTube Kauf? — Google
+Amazon Gruender? — Bezos
+Fussball Spieler? — Messi
+Basketball Spieler? — Jordan
+Tennis Spieler? — Federer
+Boxen Legende? — Ali
+Schwimmen Rekord? — Phelps
+Leichtathletik Star? — Bolt
+Golf Spieler? — Woods
+Formel1 Fahrer? — Schumacher
+Eishockey Liga? — NHL
+Handball Land? — Deutschland
+Was ist die Hauptstadt von Griechenland? — Athen
+Nenne ein bekanntes deutsches Auto. — Audi
+Welches Tier lebt im Zoo und isst viele Bananen? — Affe
+Nenne eine bekannte Sängerin aus dem Libanon. — Fairuz
+Nenne ein Nachbarland von Deutschland. — Belgien
+Welches Tier lebt in der Antarktis? — Pinguin
+Welche Sportart spielt man mit einem Ball und einem Korb? — Basketball
+Nenne eine bekannte Insel in Indonesien. — Bali
+Nenne ein großes Land in Asien. — China
+Welche bekannte Stadt gibt es in den USA, in der viele Filme spielen? — Chicago
+Nenne ein Getränk, das sehr oft verkauft wird. — Cola
+Was ist die Hauptstadt von Irland? — Dublin
+Welches Tier lebt im Meer und ist freundlich zu Menschen? — Delfin
+Nenne einen großen Fluss in Europa. — Donau
+Welche Sportart spielt man mit Pfeilen? — Darts
+Welches große Tier lebt in Afrika? — Elefant
+Nenne einen Fluss in Deutschland. — Elbe
+Welches Tier ist schlau und lebt im Wald? — Fuchs
+Welches Tier hat einen langen Hals? — Giraffe
+Aus welchem Land kommt die Sportart Judo? — Japan
+Welche Insel gehört zu Indonesien und gab einer Programmiersprache ihren Namen? — Java
+Nenne ein italienisches Gericht. — Lasagne
+Was ist die Hauptstadt von Finnland? — Helsinki
+Was ist die Hauptstadt von Schweden? — Stockholm
+Was ist die Hauptstadt von Tschechien? — Prag
+Was ist die Hauptstadt von Kroatien? — Zagreb
+Was ist die Hauptstadt von Palästina? — Jerusalem
+Welcher See liegt zwischen Deutschland, Österreich und der Schweiz? — Bodensee
+Nenne einen Stadtstaat in Europa. — Monaco
+Welcher Fluss ist die Grenze zwischen Texas und Mexiko? — Rio Grande
+Welcher Fluss ist der längste in Afrika? — Nil
+Welcher Fluss ist der längste in Südamerika? — Amazonas
+Nenne ein Land, das an zwei Ozeane grenzt. — Panama
+Welches Land ist das bevölkerungsreichste Afrikas? — Nigeria
+Welches Land ist bekannt für seine Uhrenindustrie? — Schweiz
+Welches Land ist bekannt für seine Autos wie Ferrari? — Italien
+Was ist die chemische Bezeichnung für Kochsalz? — NaCl
+Welches Element hat das Symbol „Pb“? — Blei
+Welches Element hat das Symbol „Au“? — Gold
+Welches Element hat das Symbol „Ag“? — Silber
+Welches Gas ist für den Treibhauseffekt am bekanntesten? — CO₂
+Welches flüssige Metall ist bei Raumtemperatur flüssig? — Quecksilber
+Welcher Knochen ist der längste im menschlichen Körper? — Oberschenkelknochen
+Wie viele Chromosomen hat ein Mensch normalerweise? — 46
+Wie nennt man die Vererbungslehre? — Genetik
+Was ist der flüssige Bestandteil des Blutes? — Plasma
+Wer entwickelte die Relativitätstheorie? — Einstein
+Wer war der erste Mensch auf dem Mond? — Armstrong
+Wer war der britische Premierminister im Zweiten Weltkrieg? — Churchill
+Welcher Kommunist führte die Russische Revolution an? — Lenin
+In welchem Jahr begann der Erste Weltkrieg? — 1914
+In welchem Jahr endete der Zweite Weltkrieg? — 1945
+Welches Gebäude in Berlin ist Sitz des Bundestages? — Reichstag
+Welche Farbe hat die sozialdemokratische Partei in Deutschland? — Rot
+Wo finden die Olympischen Sommerspiele 2028 statt? —  USA
+Welches Land gewann die Fußball-WM 2014? — Deutschland
+Welches Land gewann die Fußball-WM 2018? — Frankreich
+Welches Land gewann die Fußball-WM 2022? — Argentinien
+Welcher deutsche Fußballverein hat die meisten Meistertitel? — Bayern
+Wer hält den Rekord für die meisten Tore in einer Bundesliga-Saison? — Lewandowski
+Wie viele Spieler hat eine Fußballmannschaft auf dem Feld? — 11
+Wie viele Spieler hat eine Basketballmannschaft auf dem Feld? — 5
+Wie heißt das Spielfeld beim Eishockey? — Eisbahn
+Was wird beim Boxen vergeben? — Gürtel
+Welches Bild lächelt geheimnisvoll? — Mona Lisa
+Wer malte die „Sternennacht“? — Van Gogh
+Wer schrieb „Faust“? — Goethe
+Wer schrieb „Die Verwandlung“? — Kafka
+Wer schrieb „1984“? — Orwell
+Welcher Bildhauer schuf den David? — Michelangelo
+Welcher Komponist schrieb die „Neunte Sinfonie“? — Beethoven
+Welche Band sang „Stairway to Heaven“? — Led Zeppelin
+Welcher Sänger sang „Purple Rain“? — Prince
+Welcher Musiker wurde „King of Pop“ genannt? — Jackson
+Welcher Schauspieler spielte Captain Jack Sparrow? — Depp
+Welcher Schauspieler spielte „Rocky“? — Stallone
+Welche Stadt gilt als „Filmstadt“ in Indien? — Mumbai
+Welches Instrument hat sechs Saiten? — Gitarre
+Welche Stadt ist für Christen, Juden und Muslime heilig? — Jerusalem
+Welches Buch ist die heilige Schrift im Judentum? — Thora
+Wie heißt der irdische Vater von Jesus? — Josef
+Welche Frucht enthält die meisten Proteine? — Avocado
+Welches Getränk wird aus Gerste und Hopfen hergestellt? — Bier
+Welches Gebäck kommt aus Wien? — Croissant
+Welches Gewürz ist am teuersten? — Safran
+Welches Unternehmen ist bekannt für Elektroautos? — Tesla
+Welches Unternehmen ist bekannt für die Suchmaschine? — Google
+Welches Betriebssystem von Microsoft ist weit verbreitet? — Windows
+Welches Unternehmen ist der größte Online-Versandhändler? — Amazon
+Welche Währung gibt es in China? — Yuan
+Welche Währung gibt es in Indien? — Rupie
+Welches Tier kann seinen Schwanz abwerfen? — Eidechse
+Welches Tier ist das Symbol für Treue? — Schwan
+Welches Tier ist der „König der Tiere“? — Löwe
+Welches Tier ist ein nachtaktiver Raubvogel? — Eule
+Welches Tier ist ein großer Menschenaffe? — Gorilla
+Welches Tier ist bekannt für seine Schwimmhäute und den Schnabel? — Ente
+Welches Tier ist bekannt für seinen Stachel? — Igel
+Wie viele Kontinente gibt es? — 7
+Wie viele Ozeane gibt es? — 5
+Wie heißt der vierte Planet von der Sonne? — Mars
+Wie heißt der sechste Planet von der Sonne? — Saturn
+Welches Instrument misst den Luftdruck? — Barometer`;
+
+		const QUESTION_BANK = QUESTION_BANK_RAW
+			.split("\n")
+			.map((line) => line.trim())
+			.filter((line) => line.includes("—"))
+			.map((line) => {
+				const separatorIndex = line.lastIndexOf("—");
+				return {
+					question: line.slice(0, separatorIndex).trim(),
+					answer: line.slice(separatorIndex + 1).trim()
+				};
+			});
+
+		let selectedLetter = "";
+		let currentQuestion = null;
+		let currentPool = [];
+		let currentRound = 1;
+		let team1RoundsWon = 0;
+		let team2RoundsWon = 0;
+
+		// Nachbarschafts-Mapping für Hex-Board
+		const NEIGHBORS = {
+			0: [1, 5, 6], 1: [0, 2, 5, 6, 7], 2: [1, 3, 6, 7, 8], 3: [2, 4, 7, 8, 9], 4: [3, 8, 9],
+			5: [0, 1, 6, 10, 11], 6: [0, 1, 2, 5, 7, 10, 11, 12], 7: [1, 2, 3, 6, 8, 11, 12, 13], 8: [2, 3, 4, 7, 9, 12, 13, 14], 9: [3, 4, 8, 13, 14],
+			10: [5, 6, 11, 15, 16], 11: [5, 6, 7, 10, 12, 15, 16, 17], 12: [6, 7, 8, 11, 13, 16, 17, 18], 13: [7, 8, 9, 12, 14, 17, 18, 19], 14: [8, 9, 13, 18, 19],
+			15: [10, 11, 16, 20, 21], 16: [10, 11, 12, 15, 17, 20, 21, 22], 17: [11, 12, 13, 16, 18, 21, 22, 23], 18: [12, 13, 14, 17, 19, 22, 23, 24], 19: [13, 14, 18, 23, 24],
+			20: [15, 16, 21], 21: [15, 16, 17, 20, 22], 22: [16, 17, 18, 21, 23], 23: [17, 18, 19, 22, 24], 24: [18, 19, 23]
+		};
+
+		function getRowIndex(cellIndex) {
+			return Math.floor(cellIndex / 5);
+		}
+
+		function hasWinningPath(className) {
+			// UNUSED: Team 1 uses hasWinningPathVertical instead
+			return false;
+		}
+
+		function getColumnIndex(cellIndex) {
+			return cellIndex % 5;
+		}
+
+		function hasWinningPathVertical(className) {
+			// Team 1: Pfad von oberste Reihe (0-4) zu unterste Reihe (20-24)
+			const firstRowCells = [0, 1, 2, 3, 4];
+			for (let startIdx of firstRowCells) {
+				if (hexCells[startIdx].classList.contains(className)) {
+					if (hasPathToBottomVertical(startIdx, className, new Set())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		function hasPathToBottomVertical(cellIndex, className, visited) {
+			const rowIndex = getRowIndex(cellIndex);
+	
+			if (!hexCells[cellIndex].classList.contains(className)) return false;
+			if (visited.has(cellIndex)) return false;
+	
+			visited.add(cellIndex);
+	
+			// Erreichte unterste Reihe?
+			if (rowIndex === 4) return true;
+	
+			// Prüfe Nachbarn in tieferen Reihen
+			const neighbors = NEIGHBORS[cellIndex] || [];
+			for (let neighborIdx of neighbors) {
+				if (getRowIndex(neighborIdx) > rowIndex) {
+					if (hasPathToBottomVertical(neighborIdx, className, visited)) {
+						return true;
+					}
+				}
+			}
+	
+			return false;
+		}
+
+		function hasWinningPathHorizontal(className) {
+			// Team 2: Pfad von linker Spalte (0,5,10,15,20) zu rechter Spalte (4,9,14,19,24)
+			const leftColumnCells = [0, 5, 10, 15, 20];
+			for (let startIdx of leftColumnCells) {
+				if (hexCells[startIdx].classList.contains(className)) {
+					if (hasPathToRightHorizontal(startIdx, className, new Set())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		function hasPathToRightHorizontal(cellIndex, className, visited) {
+			const colIndex = getColumnIndex(cellIndex);
+	
+			if (!hexCells[cellIndex].classList.contains(className)) return false;
+			if (visited.has(cellIndex)) return false;
+	
+			visited.add(cellIndex);
+	
+			// Erreichte rechte Spalte?
+			if (colIndex === 4) return true;
+	
+			// Prüfe Nachbarn in rechteren Spalten
+			const neighbors = NEIGHBORS[cellIndex] || [];
+			for (let neighborIdx of neighbors) {
+				if (getColumnIndex(neighborIdx) > colIndex) {
+					if (hasPathToRightHorizontal(neighborIdx, className, visited)) {
+						return true;
+					}
+				}
+			}
+	
+			return false;
+		}
+
+		function showScreen(activeScreen) {
+			[splashScreen, menuScreen, questionsModeScreen, boardScreen, winScreen].forEach((screen) => {
+				screen.classList.add("hidden");
+				screen.setAttribute("aria-hidden", "true");
+			});
+			activeScreen.classList.remove("hidden");
+			activeScreen.setAttribute("aria-hidden", "false");
+		}
+
+		function openMenuScreen() {
+			showScreen(menuScreen);
+		}
+
+		function openQuestionsModeScreen() {
+			showScreen(questionsModeScreen);
+		}
+
+		function openBoardScreen() {
+			showScreen(boardScreen);
+		}
+
+		function getRoundLabel(roundNumber) {
+			if (roundNumber === 1) return "Erste";
+			if (roundNumber === 2) return "Zweite";
+			if (roundNumber === 3) return "Dritte";
+			return `${roundNumber}.`;
+		}
+
+		function updateRoundUI() {
+			roundTitleRedEl.textContent = getRoundLabel(currentRound);
+			team1ScoreEl.textContent = String(team1RoundsWon);
+			team2ScoreEl.textContent = String(team2RoundsWon);
+		}
+
+		function resetBoard() {
+			// Entferne alle Farb- und Aktiv-Klassen von allen Zellen
+			hexCells.forEach((cell) => {
+				cell.classList.remove("active", "active-green", "active-orange");
+			});
+			selectedLetter = "";
+			currentQuestion = null;
+			currentPool = [];
+			questionBadgeEl.textContent = "!";
+			questionTextEl.textContent = "Wähle einen Buchstaben, um eine Frage anzuzeigen.";
+			hideAnswer();
+		}
+
+		function resetMatch() {
+			currentRound = 1;
+			team1RoundsWon = 0;
+			team2RoundsWon = 0;
+			updateRoundUI();
+			resetBoard();
+		}
+
+		function showWinScreen(teamName, teamColor) {
+			const winTeamNameEl = document.getElementById("win-team-name");
+			const winMessageEl = document.getElementById("win-message");
+			const nextRoundBtn = document.getElementById("next-round-button");
+			const isTeam1 = teamName === "Team 1";
+
+			if (isTeam1) {
+				team1RoundsWon += 1;
+			} else {
+				team2RoundsWon += 1;
+			}
+
+			updateRoundUI();
+
+			const winnerRoundsWon = isTeam1 ? team1RoundsWon : team2RoundsWon;
+			const isFinalWin = winnerRoundsWon >= 2 || currentRound === 3;
+			
+			winTeamNameEl.textContent = teamName;
+			winTeamNameEl.style.color = teamColor;
+			winMessageEl.textContent = isFinalWin
+				? "gewinnt das ganze Spiel! Herzlichen Glückwunsch!"
+				: `hat Runde ${currentRound} gewonnen!`;
+			nextRoundBtn.textContent = isFinalWin ? "Spiel beenden" : "Zur nächsten Runde →";
+			
+			showScreen(winScreen);
+			
+			nextRoundBtn.onclick = () => {
+				if (isFinalWin) {
+					resetMatch();
+					openMenuScreen();
+					return;
+				}
+
+				currentRound += 1;
+				updateRoundUI();
+				resetBoard();
+				openBoardScreen();
+			};
+		}
+
+		function normalizeInitial(answer) {
+			const first = answer.trim().charAt(0).toUpperCase();
+			const aliasMap = { "Ä": "A", "Ö": "O", "Ü": "U" };
+			return aliasMap[first] || first;
+		}
+
+		function hideAnswer() {
+			answerLineEl.textContent = "";
+			answerLineEl.classList.add("hidden");
+		}
+
+		function setActiveCell(activeCell) {
+			hexCells.forEach((cell) => cell.classList.remove("active"));
+			activeCell.classList.add("active");
+		}
+
+		function setActiveCellGreen(activeCell) {
+			activeCell.classList.remove("active");
+			activeCell.classList.add("active-green");
+		}
+
+		function setActiveCellOrange(activeCell) {
+			activeCell.classList.remove("active");
+			activeCell.classList.add("active-orange");
+		}
+
+		function pickRandomQuestion(pool, previousQuestion) {
+			if (pool.length === 0) return null;
+			if (pool.length === 1) return pool[0];
+			let candidate = pool[Math.floor(Math.random() * pool.length)];
+			while (previousQuestion && candidate.question === previousQuestion.question) {
+				candidate = pool[Math.floor(Math.random() * pool.length)];
+			}
+			return candidate;
+		}
+
+		function loadQuestionForLetter(letter, avoidRepeat) {
+			currentPool = QUESTION_BANK.filter((entry) => normalizeInitial(entry.answer) === letter);
+			hideAnswer();
+			questionBadgeEl.textContent = letter;
+
+			if (currentPool.length === 0) {
+				currentQuestion = null;
+				questionTextEl.textContent = "Keine passende Frage fuer diesen Buchstaben gefunden.";
+				return;
+			}
+
+			const previous = avoidRepeat ? currentQuestion : null;
+			currentQuestion = pickRandomQuestion(currentPool, previous);
+			questionTextEl.textContent = currentQuestion.question;
+		}
+
+		hexCells.forEach((cell) => {
+			cell.addEventListener("click", () => {
+				selectedLetter = cell.textContent.trim().toUpperCase();
+				setActiveCell(cell);
+				loadQuestionForLetter(selectedLetter, false);
+			});
+		});
+
+		newQuestionButton.addEventListener("click", () => {
+			if (!selectedLetter) {
+				questionBadgeEl.textContent = "!";
+				questionTextEl.textContent = "Waehle zuerst einen Buchstaben aus.";
+				hideAnswer();
+				return;
+			}
+			loadQuestionForLetter(selectedLetter, true);
+		});
+
+		showAnswerButton.addEventListener("click", () => {
+			if (!currentQuestion) {
+				questionTextEl.textContent = "Waehle zuerst einen Buchstaben aus.";
+				return;
+			}
+			answerLineEl.textContent = `Antwort: ${currentQuestion.answer}`;
+			answerLineEl.classList.remove("hidden");
+		});
+
+		team1Btn.addEventListener("click", () => {
+			const activeCell = document.querySelector(".hex-cell.active");
+			if (activeCell) {
+				setActiveCellGreen(activeCell);
+				// Prüfe auf Gewinn für Team 1
+				setTimeout(() => {
+					if (hasWinningPathVertical("active-green")) {
+						showWinScreen("Team 1", "#38be18");
+					}
+				}, 100);
+			}
+		});
+
+		team2Btn.addEventListener("click", () => {
+			const activeCell = document.querySelector(".hex-cell.active");
+			if (activeCell) {
+				setActiveCellOrange(activeCell);
+				// Prüfe auf Gewinn für Team 2
+				setTimeout(() => {
+					if (hasWinningPathHorizontal("active-orange")) {
+						showWinScreen("Team 2", "#ff7a3b");
+					}
+				}, 100);
+			}
+		});
+
+		updateRoundUI();
+		setTimeout(openMenuScreen, 2500);
+		startButton.addEventListener("click", () => {
+			resetMatch();
+			openQuestionsModeScreen();
+		});
+		backToMenuButton.addEventListener("click", openMenuScreen);
+		showBoardButton.addEventListener("click", openBoardScreen);
+		boardBackButton.addEventListener("click", openQuestionsModeScreen);
+	</script>
+</body>
+</html>
+ 

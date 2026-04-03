@@ -1,0 +1,10 @@
+nohup: ignoring input
+127.0.0.1 - - [20/Mar/2026 10:46:12] "HEAD /online.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Mar/2026 10:46:20] "HEAD /online.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Mar/2026 10:46:52] "GET /online.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Mar/2026 10:46:53] code 404, message File not found
+127.0.0.1 - - [20/Mar/2026 10:46:53] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [20/Mar/2026 10:47:48] "GET /online.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Mar/2026 10:47:53] "GET /online.html HTTP/1.1" 200 -
+127.0.0.1 - - [20/Mar/2026 10:47:54] code 404, message File not found
+127.0.0.1 - - [20/Mar/2026 10:47:54] "GET /favicon.ico HTTP/1.1" 404 -

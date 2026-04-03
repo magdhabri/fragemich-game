@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGDNUMBER Online</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e1b4b, #581c87, #831843);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.container { width: 100%; max-width: 560px; }
+.title { text-align: center; margin-bottom: 24px; }
+.title h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #fde047, #f472b6, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.title p { color: #e9d5ff; margin-top: 8px; }
+.card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 24px;
+}
+.hidden { display: none; }
+.section-title { color: white; font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; text-align: center; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; gap: 10px; }
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  outline: none;
+}
+input::placeholder { color: rgba(233,213,255,0.7); }
+button {
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+.btn-main { background: linear-gradient(90deg, #ec4899, #9333ea); }
+.btn-main:hover { filter: brightness(1.05); }
+.btn-blue { background: #3b82f6; }
+.btn-green { background: #10b981; }
+.badge {
+  display: inline-block;
+  background: rgba(253,224,71,0.2);
+  border: 1px solid rgba(253,224,71,0.35);
+  color: #fde047;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+.info { color: #ddd6fe; font-size: 0.95rem; }
+.error { color: #fca5a5; min-height: 20px; margin-top: 8px; text-align: center; }
+.status { color: #c4b5fd; text-align: center; margin: 8px 0 16px; }
+.box {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.box h3 { color: white; margin-bottom: 6px; }
+.box p { color: #ddd6fe; font-size: 0.95rem; }
+.guesses { max-height: 180px; overflow-y: auto; }
+.guess-item {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #f5f3ff;
+  margin-top: 6px;
+}
+.win { color: #fde047; font-weight: 700; text-align: center; font-size: 1.2rem; margin: 12px 0; }
+.end-actions { display: flex; gap: 10px; margin-top: 10px; }
+.end-actions button { flex: 1; }
+.finish-panel {
+  background: rgba(253,224,71,0.12);
+  border: 1px solid rgba(253,224,71,0.35);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+.rematch-label { color: #fef3c7; text-align: center; font-size: 0.95rem; margin-bottom: 8px; }
+.rematch-note { color: #fde68a; text-align: center; font-size: 0.9rem; margin-top: 8px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">
+    <h1>MAGDNUMBER ONLINE</h1>
+    <p>Spiele live mit einem anderen Spieler</p>
+  </div>
+
+  <div class="card">
+    <div id="view-start">
+      <p class="section-title">Spiel starten</p>
+      <div class="stack">
+        <button class="btn-main" onclick="showCreate()">Raum erstellen</button>
+        <button class="btn-main" onclick="showJoin()">Raum beitreten</button>
+      </div>
+    </div>
+
+    <div id="view-create" class="hidden">
+      <p class="section-title">Neuen Raum erstellen</p>
+      <div class="stack">
+        <input id="create-name" placeholder="Dein Name" maxlength="20">
+        <div class="row">
+          <input id="create-min" type="number" value="1" min="0" placeholder="Min">
+          <input id="create-max" type="number" value="100" min="1" placeholder="Max">
+        </div>
+        <input id="create-secret" type="number" placeholder="Deine geheime Zahl">
+        <button class="btn-blue" onclick="createRoom()">Raum erstellen</button>
+        <button class="btn-main" onclick="showStart()">Zurück</button>
+      </div>
+      <p id="create-error" class="error"></p>
+    </div>
+
+    <div id="view-join" class="hidden">
+      <p class="section-title">Raum beitreten</p>
+      <div class="stack">
+        <input id="join-room" placeholder="Raumcode (z. B. AB12CD)" maxlength="6">
+        <input id="join-name" placeholder="Dein Name" maxlength="20">
+        <input id="join-secret" type="number" placeholder="Deine geheime Zahl">
+        <button class="btn-green" onclick="joinRoom()">Beitreten</button>
+        <button class="btn-main" onclick="showStart()">Zurück</button>
+      </div>
+      <p id="join-error" class="error"></p>
+    </div>
+
+    <div id="view-game" class="hidden">
+      <p class="section-title">Spielraum</p>
+      <div id="room-code-wrap" style="text-align:center">
+        <span class="badge">Raumcode: <span id="room-code">-</span></span>
+      </div>
+      <p class="status" id="status-line">Lade Spielstatus...</p>
+
+      <div class="box" id="me-box">
+        <h3>Du</h3>
+        <p id="me-line">-</p>
+      </div>
+      <div class="box" id="other-box">
+        <h3>Gegner</h3>
+        <p id="other-line">Warte auf Spieler...</p>
+      </div>
+
+      <div id="guess-panel" class="box hidden">
+        <h3>Dein Zug</h3>
+        <div class="row">
+          <input id="guess-input" type="number" placeholder="Ratezahl">
+          <button class="btn-blue" onclick="sendGuess()">Raten</button>
+        </div>
+        <p id="guess-error" class="error"></p>
+      </div>
+
+      <div class="box hidden" id="opponent-tips-box">
+        <h3>Letzte 2 Tipps von Gegner</h3>
+        <div id="opponent-last-guesses" class="guesses"></div>
+      </div>
+
+      <div class="box" id="my-guesses-box">
+        <h3>Deine Tipps</h3>
+        <div id="my-guesses" class="guesses"></div>
+      </div>
+
+      <div id="finish-panel" class="finish-panel hidden">
+        <div id="winner-line" class="win hidden"></div>
+        <div id="rematch-secret-wrap" class="hidden">
+          <p class="rematch-label">Neue Geheimzahl für die nächste Runde</p>
+          <div class="row">
+            <input id="rematch-secret-input" type="number" placeholder="Neue Geheimzahl" onkeydown="if(event.key==='Enter')requestRematch()">
+            <button class="btn-green" onclick="requestRematch()">✓</button>
+          </div>
+          <p id="rematch-note" class="rematch-note"></p>
+        </div>
+        <div id="end-actions" class="end-actions hidden">
+          <button class="btn-green" onclick="showRematchPanel()">Nochmal spielen</button>
+          <button class="btn-main" onclick="leaveGame()">Raum verlassen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let roomCode = '';
+let playerId = '';
+let stateTimer = null;
+let gameOverSoundPlayed = false;
+let audioCtx = null;
+let rematchPanelOpen = false;
+
+function byId(id) { return document.getElementById(id); }
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    audioCtx = new Ctx();
+  }
+  return audioCtx;
+}
+
+function playTone(frequency, durationMs, startAt) {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = frequency;
+  gain.gain.setValueAtTime(0.0001, startAt);
+  gain.gain.exponentialRampToValueAtTime(0.18, startAt + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startAt + durationMs / 1000);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(startAt);
+  osc.stop(startAt + durationMs / 1000);
+}
+
+function playWinnerSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime + 0.02;
+  playTone(523.25, 120, t);
+  playTone(659.25, 140, t + 0.14);
+  playTone(783.99, 180, t + 0.30);
+}
+
+function playLoserSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const t = ctx.currentTime + 0.02;
+  playTone(392.00, 160, t);
+  playTone(329.63, 180, t + 0.18);
+  playTone(261.63, 220, t + 0.38);
+}
+
+function showOnly(id) {
+  ['view-start', 'view-create', 'view-join', 'view-game'].forEach(v => byId(v).classList.add('hidden'));
+  byId(id).classList.remove('hidden');
+}
+
+function showStart() { showOnly('view-start'); clearErrors(); }
+function showCreate() { showOnly('view-create'); clearErrors(); }
+function showJoin() { showOnly('view-join'); clearErrors(); }
+
+function clearErrors() {
+  byId('create-error').textContent = '';
+  byId('join-error').textContent = '';
+  byId('guess-error').textContent = '';
+  byId('rematch-note').textContent = '';
+}
+
+async function apiPost(url, payload) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'bypass-tunnel-reminder': 'true'
+    },
+    body: JSON.stringify(payload)
+  });
+  const raw = await res.text();
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (_) {
+    throw new Error('Tunnel-Sperrseite aktiv. Öffne zuerst den Spiel-Link im Browser und gib das Tunnel-Passwort ein.');
+  }
+  if (!res.ok) throw new Error(data.error || 'Fehler');
+  return data;
+}
+
+async function createRoom() {
+  clearErrors();
+  const name = byId('create-name').value.trim();
+  const min = parseInt(byId('create-min').value, 10);
+  const max = parseInt(byId('create-max').value, 10);
+  const secret = parseInt(byId('create-secret').value, 10);
+
+  try {
+    const data = await apiPost('/api/create-room', { name, min, max, secret });
+    roomCode = data.roomCode;
+    playerId = data.playerId;
+    enterGameView();
+  } catch (err) {
+    byId('create-error').textContent = err.message;
+  }
+}
+
+async function joinRoom() {
+  clearErrors();
+  const room = byId('join-room').value.trim().toUpperCase();
+  const name = byId('join-name').value.trim();
+  const secret = parseInt(byId('join-secret').value, 10);
+
+  try {
+    const data = await apiPost('/api/join-room', { roomCode: room, name, secret });
+    roomCode = data.roomCode;
+    playerId = data.playerId;
+    enterGameView();
+  } catch (err) {
+    byId('join-error').textContent = err.message;
+  }
+}
+
+function renderGuesses(list) {
+  if (!list.length) return '<p class="info">Noch keine Tipps</p>';
+  return list.map((g, i) => `<div class="guess-item"><span>#${i + 1}: ${g.guess}</span><span>${g.hint}</span></div>`).join('');
+}
+
+function renderLastTwoGuesses(list) {
+  if (!list.length) return '<p class="info">Noch keine Tipps</p>';
+  const lastTwo = list.slice(-2);
+  const startIndex = list.length - lastTwo.length;
+  return lastTwo.map((g, i) => `<div class="guess-item"><span>#${startIndex + i + 1}: ${g.guess}</span><span>${g.hint}</span></div>`).join('');
+}
+
+function enterGameView() {
+  showOnly('view-game');
+  byId('room-code').textContent = roomCode;
+  fetchState();
+  if (stateTimer) clearInterval(stateTimer);
+  stateTimer = setInterval(fetchState, 600);
+}
+
+async function fetchState() {
+  if (!roomCode || !playerId) return;
+  try {
+    const res = await fetch(`/api/state?room=${encodeURIComponent(roomCode)}&player=${encodeURIComponent(playerId)}`, {
+      cache: 'no-store',
+      headers: { 'bypass-tunnel-reminder': 'true' }
+    });
+    const raw = await res.text();
+    let state;
+    try {
+      state = JSON.parse(raw);
+    } catch (_) {
+      throw new Error('Tunnel-Sperrseite aktiv. Seite neu laden und Tunnel-Passwort erneut eingeben.');
+    }
+    if (!res.ok) throw new Error(state.error || 'Statusfehler');
+
+    const me = state.me;
+    const other = state.other;
+    const range = state.range;
+    const rematch = state.rematch || { readyCount: 0, totalPlayers: 2, meReady: false };
+    const roomCodeWrap = byId('room-code-wrap');
+    const opponentTipsBox = byId('opponent-tips-box');
+
+    byId('status-line').textContent = state.status === 'waiting'
+      ? 'Warte auf zweiten Spieler...'
+      : state.winner
+        ? 'Spiel beendet'
+        : (state.turn === playerId ? 'Du bist dran!' : 'Gegner ist dran');
+
+    if (state.status === 'waiting') {
+      roomCodeWrap.classList.remove('hidden');
+      opponentTipsBox.classList.add('hidden');
+    } else if (state.winner) {
+      roomCodeWrap.classList.add('hidden');
+      opponentTipsBox.classList.add('hidden');
+    } else {
+      roomCodeWrap.classList.add('hidden');
+      opponentTipsBox.classList.remove('hidden');
+    }
+
+    byId('me-line').textContent = `${me.name} | Geheimzahl: ${me.secret} | Versuche: ${me.guesses.length}`;
+    byId('other-line').textContent = other && other.name
+      ? `${other.name} | Versuche: ${other.guesses.length}${other.secret != null ? ' | Geheimzahl: ' + other.secret : ''}`
+      : 'Warte auf Spieler...';
+
+    byId('guess-input').min = range.min;
+    byId('guess-input').max = range.max;
+    byId('guess-input').placeholder = `${range.min} - ${range.max}`;
+    byId('rematch-secret-input').min = range.min;
+    byId('rematch-secret-input').max = range.max;
+    byId('rematch-secret-input').placeholder = `Neue Zahl (${range.min} - ${range.max})`;
+
+    byId('my-guesses').innerHTML = renderGuesses(me.guesses);
+    byId('opponent-last-guesses').innerHTML = renderLastTwoGuesses(other && other.guesses ? other.guesses : []);
+
+    const canGuess = state.status === 'active' && state.turn === playerId;
+    byId('guess-panel').classList.toggle('hidden', !canGuess);
+
+    const meBox = byId('me-box');
+    const otherBox = byId('other-box');
+    const myGuessesBox = byId('my-guesses-box');
+    const guessPanel = byId('guess-panel');
+    const winnerLine = byId('winner-line');
+    const endActions = byId('end-actions');
+    const finishPanel = byId('finish-panel');
+    const rematchSecretWrap = byId('rematch-secret-wrap');
+    const rematchSecretInput = byId('rematch-secret-input');
+    const rematchNote = byId('rematch-note');
+    if (state.winner) {
+      meBox.classList.add('hidden');
+      otherBox.classList.add('hidden');
+      myGuessesBox.classList.add('hidden');
+      guessPanel.classList.add('hidden');
+      const winnerName = state.winner === me.id ? me.name : (other ? other.name : 'Gegner');
+      const iWon = state.winner === me.id;
+      winnerLine.textContent = iWon
+        ? `🏆 du hast gewonnen! 🎉`
+        : `😢 ${winnerName} hat gewonnen.`;
+      finishPanel.classList.remove('hidden');
+      rematchSecretWrap.classList.add('hidden');
+      winnerLine.classList.remove('hidden');
+      endActions.classList.remove('hidden');
+
+      if (!gameOverSoundPlayed) {
+        try {
+          if (iWon) playWinnerSound();
+          else playLoserSound();
+        } catch (_) {}
+        gameOverSoundPlayed = true;
+      }
+
+      if (rematch.meReady && rematch.readyCount < rematch.totalPlayers) {
+        rematchPanelOpen = false;
+        byId('status-line').textContent = 'Warte auf Gegner für neue Runde...';
+        rematchSecretWrap.classList.remove('hidden');
+        rematchSecretInput.disabled = true;
+        rematchNote.textContent = 'Deine neue Geheimzahl ist gespeichert.';
+        endActions.classList.add('hidden');
+      } else if (rematch.meReady && rematch.readyCount >= rematch.totalPlayers) {
+        rematchPanelOpen = false;
+        rematchSecretWrap.classList.remove('hidden');
+        rematchSecretInput.disabled = true;
+        rematchNote.textContent = 'Neue Runde wird gestartet...';
+        endActions.classList.add('hidden');
+      } else if (rematchPanelOpen) {
+        rematchSecretWrap.classList.remove('hidden');
+        rematchSecretInput.disabled = false;
+        rematchNote.textContent = '';
+        endActions.classList.add('hidden');
+      } else {
+        rematchSecretWrap.classList.add('hidden');
+        rematchSecretInput.disabled = false;
+        rematchNote.textContent = '';
+        endActions.classList.remove('hidden');
+      }
+    } else {
+      gameOverSoundPlayed = false;
+      rematchPanelOpen = false;
+      meBox.classList.remove('hidden');
+      otherBox.classList.remove('hidden');
+      myGuessesBox.classList.remove('hidden');
+      guessPanel.classList.remove('hidden');
+      finishPanel.classList.add('hidden');
+      rematchSecretWrap.classList.add('hidden');
+      winnerLine.classList.add('hidden');
+      endActions.classList.add('hidden');
+      rematchSecretInput.disabled = false;
+      rematchSecretInput.value = '';
+      rematchNote.textContent = '';
+    }
+  } catch (err) {
+    byId('status-line').textContent = err.message;
+  }
+}
+
+async function sendGuess() {
+  clearErrors();
+  const guess = parseInt(byId('guess-input').value, 10);
+  try {
+    await apiPost('/api/guess', { roomCode, playerId, guess });
+    byId('guess-input').value = '';
+    fetchState();
+  } catch (err) {
+    byId('guess-error').textContent = err.message;
+  }
+}
+
+function showRematchPanel() {
+  rematchPanelOpen = true;
+  byId('end-actions').classList.add('hidden');
+  byId('rematch-secret-wrap').classList.remove('hidden');
+  byId('rematch-secret-input').focus();
+}
+
+async function requestRematch() {
+  clearErrors();
+  const secret = parseInt(byId('rematch-secret-input').value, 10);
+  if (Number.isNaN(secret)) {
+    byId('rematch-note').textContent = 'Bitte neue Geheimzahl eingeben.';
+    return;
+  }
+  try {
+    const data = await apiPost('/api/rematch', { roomCode, playerId, secret });
+    if (data.started) {
+      byId('status-line').textContent = 'Neue Runde gestartet!';
+      byId('rematch-note').textContent = '';
+    } else {
+      byId('status-line').textContent = 'Neue Geheimzahl gespeichert. Warte auf Gegner...';
+      byId('rematch-note').textContent = 'Deine neue Geheimzahl ist gespeichert.';
+    }
+    fetchState();
+  } catch (err) {
+    byId('rematch-note').textContent = err.message;
+  }
+}
+
+function leaveGame() {
+  roomCode = '';
+  playerId = '';
+  if (stateTimer) {
+    clearInterval(stateTimer);
+    stateTimer = null;
+  }
+  showStart();
+}
+
+showStart();
+</script>
+</body>
+</html>
