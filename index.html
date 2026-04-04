@@ -308,11 +308,11 @@
 		}
 
 		.hex-row + .hex-row {
-			margin-top: calc(var(--hex-h) * -0.30);
+			margin-top: calc(var(--hex-h) * -0.28);
 		}
 
 		.hex-row.offset {
-			margin-left: calc(var(--hex-w) * 0.44);
+			margin-left: calc(var(--hex-w) * 0.88);
 		}
 
 		.hex-cell {
@@ -498,9 +498,10 @@
 		}
 
 		.score-item {
-			display: flex;
-			justify-content: space-between;
+			display: grid;
+			grid-template-columns: auto 1fr auto;
 			align-items: center;
+			column-gap: 10px;
 			border-radius: 999px;
 			padding: 8px 12px;
 			font-weight: 900;
@@ -520,8 +521,8 @@
 		}
 
 		.score-pill {
-			width: 32px;
-			height: 36px;
+			width: 52px;
+			height: 55px;
 			background: currentColor;
 			clip-path: polygon(25% 7%, 75% 7%, 98% 50%, 75% 93%, 25% 93%, 2% 50%);
 			display: grid;
@@ -530,25 +531,89 @@
 			color: #2a1f45;
 		}
 
+		.score-item.team-1 .score-pill {
+			background: #36d51a;
+			color: #173f10;
+		}
+
+		.score-item.team-2 .score-pill {
+			background: #ff8b35;
+			color: #5f2c00;
+		}
+
+		.team-block-icon {
+			position: relative;
+			justify-self: center;
+			width: 55px;
+			height: 53px;
+			object-fit: contain;
+			display: block;
+			cursor: pointer;
+			filter: drop-shadow(0 1px 0 rgba(33, 11, 36, 0.35));
+		}
+
+		.countdown-overlay {
+			position: fixed;
+			inset: 0;
+			display: grid;
+			place-items: center;
+			background: rgba(20, 8, 35, 0.55);
+			z-index: 5000;
+		}
+
+		.countdown-overlay.hidden {
+			display: none;
+		}
+
+		.countdown-card {
+			width: min(88vw, 520px);
+			background: rgba(43, 16, 77, 0.95);
+			border: 2px solid rgba(255, 255, 255, 0.22);
+			border-radius: 18px;
+			padding: 30px 24px;
+			text-align: center;
+			box-shadow: 0 22px 45px rgba(12, 2, 30, 0.45);
+		}
+
+		.countdown-text {
+			font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+			font-weight: 800;
+			line-height: 1.5;
+			color: #fff8e8;
+			margin-bottom: 18px;
+		}
+
+		.countdown-number {
+			display: inline-block;
+			font-size: clamp(2.2rem, 6.5vw, 3.2rem);
+			font-weight: 900;
+			color: #ffe100;
+			text-shadow: 0 3px 0 rgba(42, 16, 73, 0.85);
+		}
+
+
+
 		@media (max-width: 1080px) {
 			.board-layout {
 				grid-template-columns: 1fr;
+				grid-template-rows: auto auto;
 				overflow: auto;
-				height: 100vh;
+				height: 100svh;
 			}
 
 			.board-left {
-				min-height: 58vh;
+				min-height: 44svh;
 				padding: 12px;
 			}
 
 			.hex-row.offset {
-				margin-left: calc(var(--hex-w) * 0.38);
+				margin-left: calc(var(--hex-w) * 0.44);
 			}
 
 			.board-right {
 				border-left: none;
 				border-top: 6px solid #3f2073;
+				padding: 12px;
 			}
 
 			.round-title {
@@ -561,6 +626,104 @@
 		}
 
 		@media (max-width: 680px) {
+			body {
+				overflow: auto;
+			}
+
+			.board-screen {
+				overflow-y: auto;
+			}
+
+			.board-layout {
+				height: auto;
+				min-height: 100svh;
+			}
+
+			.board-left {
+				min-height: 42svh;
+				padding: 6px;
+			}
+
+			.hex-board {
+				--hex-w: clamp(58px, 15vw, 76px);
+				--hex-h: clamp(66px, 16vw, 84px);
+				scale: 1;
+			}
+
+			.hex-row .hex-cell + .hex-cell {
+				margin-left: calc(var(--hex-w) * -0.12);
+			}
+
+			.hex-row + .hex-row {
+				margin-top: calc(var(--hex-h) * -0.28);
+			}
+
+			.hex-row.offset {
+				margin-left: calc(var(--hex-w) * 0.14);
+			}
+
+			.board-right {
+				padding: 10px 10px 14px;
+			}
+
+			.round-title {
+				font-size: 2.1rem;
+			}
+
+			.board-top {
+				margin-bottom: 8px;
+				padding-right: 46px;
+			}
+
+			.menu-icon-btn {
+				width: 40px;
+				height: 40px;
+				border-radius: 10px;
+			}
+
+			.question-panel {
+				padding: 10px;
+			}
+
+			.question-inner {
+				min-height: 145px;
+				padding: 10px;
+			}
+
+			.question-text {
+				font-size: 1.8rem;
+			}
+
+			.answer-line {
+				font-size: 0.95rem;
+				padding: 7px 9px;
+			}
+
+			.action-btn {
+				font-size: 1.7rem;
+				padding: 9px;
+			}
+
+			.score-list {
+				margin-top: 10px;
+			}
+
+			.score-item {
+				font-size: 2rem;
+				padding: 7px 10px;
+			}
+
+			.score-pill {
+				width: 26px;
+				height: 30px;
+				font-size: 1.8rem;
+			}
+
+			.team-block-icon {
+				width: 30px;
+				height: 30px;
+			}
+
 			.splash-title-orbit {
 				width: min(90vw, 430px);
 			}
@@ -571,6 +734,116 @@
 
 			.title-word.line-3 {
 				right: -4%;
+			}
+		}
+
+		@media (max-width: 1080px) and (orientation: landscape) {
+			body {
+				overflow: hidden;
+			}
+
+			.board-screen {
+				overflow: hidden;
+			}
+
+			.board-layout {
+				grid-template-columns: 2.05fr 1fr;
+				grid-template-rows: 1fr;
+				height: 100svh;
+			}
+
+			.board-left {
+				min-height: auto;
+				padding: 8px;
+			}
+
+			.hex-board {
+				--hex-w: clamp(54px, 6.5vw, 84px);
+				--hex-h: clamp(62px, 7.2vw, 92px);
+				scale: 1;
+			}
+
+			.hex-row.offset {
+				margin-left: calc(var(--hex-w) * 0.44);
+			}
+
+			.hex-row .hex-cell + .hex-cell {
+				margin-left: calc(var(--hex-w) * -0.12);
+			}
+
+			.hex-row + .hex-row {
+				margin-top: calc(var(--hex-h) * -0.28);
+			}
+
+			.board-right {
+				border-left: 5px solid #3f2073;
+				border-top: none;
+				padding: 8px 10px;
+			}
+
+			.round-title {
+				font-size: 2.2rem;
+			}
+
+			.board-top {
+				padding-right: 42px;
+				margin-bottom: 8px;
+			}
+
+			.menu-icon-btn {
+				width: 36px;
+				height: 36px;
+				font-size: 1.1rem;
+			}
+
+			.question-panel {
+				padding: 10px;
+			}
+
+			.question-inner {
+				min-height: 132px;
+				padding: 8px;
+			}
+
+			.question-text {
+				font-size: 1.5rem;
+			}
+
+			.answer-line {
+				margin-top: 8px;
+				padding: 6px 8px;
+				font-size: 0.88rem;
+			}
+
+			.question-actions {
+				margin-top: 8px;
+				gap: 8px;
+			}
+
+			.action-btn {
+				padding: 8px;
+				font-size: 1.65rem;
+			}
+
+			.score-list {
+				margin-top: 8px;
+				gap: 6px;
+			}
+
+			.score-item {
+				font-size: 1.9rem;
+				padding: 5px 10px;
+			}
+
+			.score-pill {
+				width: 22px;
+				height: 26px;
+				font-size: 1.6rem;
+			}
+
+			.team-block-icon {
+				width: 28px;
+				height: 28px;
 			}
 		}
 
@@ -698,16 +971,25 @@
 				<div class="score-list">
 					<div id="team-1-btn" class="score-item team-1" style="cursor: pointer;">
 						<span>Team 1</span>
+						<img id="team-1-block-icon" class="team-block-icon" src="Spielkarte%20mit%20No-Symbol.png" alt="Sperr-Symbol">
 						<span class="score-pill">0</span>
 					</div>
 					<div id="team-2-btn" class="score-item team-2" style="cursor: pointer;">
 						<span>Team 2</span>
+						<img id="team-2-block-icon" class="team-block-icon" src="Spielkarte%20mit%20No-Symbol.png" alt="Sperr-Symbol">
 						<span class="score-pill">0</span>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
+
+	<div id="countdown-overlay" class="countdown-overlay hidden" aria-live="polite" aria-atomic="true">
+		<div class="countdown-card">
+			<p id="countdown-text" class="countdown-text"></p>
+			<div id="countdown-number" class="countdown-number">10</div>
+		</div>
+	</div>
 
 	<section id="win-screen" class="screen hidden" aria-hidden="true" style="background: #5f35a5;">
 		<div style="text-align: center; padding: 40px;">
@@ -735,9 +1017,15 @@
 		const showAnswerButton = document.getElementById("show-answer-button");
 		const team1Btn = document.getElementById("team-1-btn");
 		const team2Btn = document.getElementById("team-2-btn");
+		const team1BlockIcon = document.getElementById("team-1-block-icon");
+		const team2BlockIcon = document.getElementById("team-2-block-icon");
+		const countdownOverlay = document.getElementById("countdown-overlay");
+		const countdownTextEl = document.getElementById("countdown-text");
+		const countdownNumberEl = document.getElementById("countdown-number");
 		const roundTitleRedEl = document.querySelector(".round-title .line-red");
 		const team1ScoreEl = team1Btn.querySelector(".score-pill");
 		const team2ScoreEl = team2Btn.querySelector(".score-pill");
+		let countdownTimer = null;
 
 		const QUESTION_BANK_RAW = `Hauptstadt Deutschland? — Berlin
 Was ist das Groesste Land? — Russland
@@ -1179,6 +1467,29 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 			activeCell.classList.add("active-orange");
 		}
 
+		function startBlockCountdown(blockedTeamLabel) {
+			// Clear existing timer if running
+			if (countdownTimer) {
+				clearInterval(countdownTimer);
+			}
+
+			let remaining = 7;
+			countdownTextEl.textContent = `${blockedTeamLabel} muss 7 Sekunden nicht antworten.`;
+			countdownNumberEl.textContent = remaining;
+			countdownOverlay.classList.remove("hidden");
+
+			countdownTimer = setInterval(() => {
+				remaining -= 1;
+				countdownNumberEl.textContent = remaining;
+				
+				if (remaining <= 0) {
+					countdownOverlay.classList.add("hidden");
+					clearInterval(countdownTimer);
+					countdownTimer = null;
+				}
+			}, 1000);
+		}
+
 		function pickRandomQuestion(pool, previousQuestion) {
 			if (pool.length === 0) return null;
 			if (pool.length === 1) return pool[0];
@@ -1236,12 +1547,9 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 			const activeCell = document.querySelector(".hex-cell.active");
 			if (activeCell) {
 				setActiveCellGreen(activeCell);
-				// Prüfe auf Gewinn für Team 1
-				setTimeout(() => {
-					if (hasWinningPathVertical("active-green")) {
-						showWinScreen("Team 1", "#38be18");
-					}
-				}, 100);
+				if (hasWinningPathVertical("active-green")) {
+					showWinScreen("Team 1", "#38be18");
+				}
 			}
 		});
 
@@ -1249,13 +1557,22 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 			const activeCell = document.querySelector(".hex-cell.active");
 			if (activeCell) {
 				setActiveCellOrange(activeCell);
-				// Prüfe auf Gewinn für Team 2
-				setTimeout(() => {
-					if (hasWinningPathHorizontal("active-orange")) {
-						showWinScreen("Team 2", "#ff7a3b");
-					}
-				}, 100);
+				if (hasWinningPathHorizontal("active-orange")) {
+					showWinScreen("Team 2", "#ff7a3b");
+				}
 			}
+		});
+
+
+
+		team1BlockIcon.addEventListener("click", (event) => {
+			event.stopPropagation();
+			startBlockCountdown("Team 2");
+		});
+
+		team2BlockIcon.addEventListener("click", (event) => {
+			event.stopPropagation();
+			startBlockCountdown("Team 1");
 		});
 
 		updateRoundUI();
