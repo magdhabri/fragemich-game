@@ -508,7 +508,7 @@
 
 		.score-item {
 			display: grid;
-			grid-template-columns: auto 1fr auto;
+			grid-template-columns: auto auto auto 1fr auto;
 			align-items: center;
 			column-gap: 10px;
 			border-radius: 999px;
@@ -550,7 +550,8 @@
 			color: #5f2c00;
 		}
 
-		.team-block-icon {
+		.team-block-icon,
+		.team-minus-icon {
 			position: relative;
 			justify-self: center;
 			width: 55px;
@@ -737,7 +738,8 @@
 				font-size: 1.8rem;
 			}
 
-			.team-block-icon {
+			.team-block-icon,
+			.team-minus-icon {
 				width: 30px;
 				height: 30px;
 			}
@@ -859,7 +861,8 @@
 				font-size: 1.6rem;
 			}
 
-			.team-block-icon {
+			.team-block-icon,
+			.team-minus-icon {
 				width: 28px;
 				height: 28px;
 			}
@@ -989,11 +992,13 @@
 				<div class="score-list">
 					<div id="team-1-btn" class="score-item team-1" style="cursor: pointer;">
 						<span>Team 1</span>
+						<img class="team-minus-icon" src="Minuskarten.png" alt="Minus-Symbol">
 						<img id="team-1-block-icon" class="team-block-icon" src="Spielkarte%20mit%20No-Symbol.png" alt="Sperr-Symbol">
 						<span class="score-pill">0</span>
 					</div>
 					<div id="team-2-btn" class="score-item team-2" style="cursor: pointer;">
 						<span>Team 2</span>
+						<img class="team-minus-icon" src="Minuskarten.png" alt="Minus-Symbol">
 						<img id="team-2-block-icon" class="team-block-icon" src="Spielkarte%20mit%20No-Symbol.png" alt="Sperr-Symbol">
 						<span class="score-pill">0</span>
 					</div>
