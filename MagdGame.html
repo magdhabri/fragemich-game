@@ -24,6 +24,7 @@
 
 		body {
 			min-height: 100vh;
+			min-height: 100dvh;
 			font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
 			color: #ffffff;
 			background:
@@ -37,6 +38,10 @@
 			inset: 0;
 			display: grid;
 			place-items: center;
+			min-height: 100vh;
+			min-height: 100dvh;
+			padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+			overflow: auto;
 			transition: opacity 500ms ease, transform 500ms ease;
 		}
 
@@ -135,6 +140,8 @@
 
 		.menu-wrap {
 			width: min(92vw, 480px);
+			max-height: calc(100dvh - 28px);
+			overflow: auto;
 			background: var(--panel);
 			border: 1px solid var(--panel-border);
 			border-radius: 20px;
@@ -184,6 +191,8 @@
 		.questions-mode-wrap {
 			direction: ltr;
 			width: min(92vw, 560px);
+			max-height: calc(100dvh - 28px);
+			overflow: auto;
 			background: rgba(36, 9, 70, 0.9);
 			border: 1px solid rgba(255, 255, 255, 0.12);
 			border-radius: 22px;
@@ -628,6 +637,15 @@
 		@media (max-width: 680px) {
 			body {
 				overflow: auto;
+			}
+
+			.screen {
+				padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+			}
+
+			.menu-wrap,
+			.questions-mode-wrap {
+				max-height: calc(100dvh - 16px);
 			}
 
 			.board-screen {
