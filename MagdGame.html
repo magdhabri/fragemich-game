@@ -697,6 +697,7 @@
 		}
 
 		.auction-popup-card {
+			position: relative;
 			width: min(92vw, calc(640px * var(--ui-scale)));
 			max-height: min(86dvh, 640px);
 			overflow: auto;
@@ -713,6 +714,23 @@
 			font-weight: 900;
 			color: #ffe100;
 			margin-bottom: 12px;
+			padding-right: 42px;
+		}
+
+		.auction-popup-close {
+			position: absolute;
+			top: 12px;
+			right: 12px;
+			width: 34px;
+			height: 34px;
+			border: none;
+			border-radius: 50%;
+			background: rgba(255, 255, 255, 0.18);
+			color: #ffffff;
+			font-size: 1.35rem;
+			font-weight: 900;
+			line-height: 1;
+			cursor: pointer;
 		}
 
 		.auction-popup-question {
@@ -758,6 +776,10 @@
 
 		.auction-popup-btn.start {
 			background: #ffe100;
+		}
+
+		.auction-popup-btn.other {
+			background: #6fd7e5;
 		}
 
 		.auction-popup-btn.success {
@@ -1206,10 +1228,12 @@
 
 	<div id="auction-popup-overlay" class="auction-popup-overlay hidden" aria-live="polite" aria-atomic="true">
 		<div class="auction-popup-card">
+			<button id="auction-popup-close" class="auction-popup-close" aria-label="Auktionsfenster schließen">X</button>
 			<h3 class="auction-popup-title">Auktionskarte</h3>
 			<p id="auction-popup-question" class="auction-popup-question"></p>
 			<p id="auction-popup-timer" class="auction-popup-timer">Zeit: 30 Sekunden</p>
 			<div id="auction-popup-start-wrap" class="auction-popup-start-wrap">
+				<button id="auction-popup-another" class="auction-popup-btn other">Andere Frage</button>
 				<button id="auction-popup-start" class="auction-popup-btn start">Starten</button>
 			</div>
 			<div id="auction-popup-result-actions" class="auction-popup-result-actions hidden">
@@ -1264,6 +1288,8 @@
 		const auctionPopupTimerEl = document.getElementById("auction-popup-timer");
 		const auctionPopupStartWrap = document.getElementById("auction-popup-start-wrap");
 		const auctionPopupResultActions = document.getElementById("auction-popup-result-actions");
+		const auctionPopupCloseBtn = document.getElementById("auction-popup-close");
+		const auctionPopupAnotherBtn = document.getElementById("auction-popup-another");
 		const auctionPopupStartBtn = document.getElementById("auction-popup-start");
 		const auctionPopupSuccessBtn = document.getElementById("auction-popup-success");
 		const auctionPopupFailBtn = document.getElementById("auction-popup-fail");
@@ -1274,6 +1300,7 @@
 		let countdownTimer = null;
 		let auctionTimer = null;
 		let auctionTeamClass = "";
+		let auctionCardEl = null;
 		let minusTargetClass = "";
 		let minusSelfClass = "";
 
@@ -1290,11 +1317,30 @@
 			{ question: "Wie schnell ist Licht ungefaehr (km/s)?", answer: "300.000 km/s" },
 			{ question: "Welches Organ produziert Insulin?", answer: "Bauchspeicheldruese" },
 			{ question: "Wie viele Sekunden hat ein Tag?", answer: "86.400" },
+			{ question: "Wie viele Augen hat eine Spinne?", answer: "8" },
+			{ question: "Wie viele Beine hat eine Spinne?", answer: "8" },
+			{ question: "Wie viele Punkte hat ein Wuerfel insgesamt?", answer: "21" },
 			{ question: "Wie viele Chromosomen hat ein Mensch?", answer: "46" },
+			{ question: "Wie viele Felder hat ein Schachbrett?", answer: "64" },
+			{ question: "Was ist die Hauptstadt von Australien?", answer: "Canberra" },
+			{ question: "Was ist die Hauptaufgabe der roten Blutkoerperchen?", answer: "Sauerstofftransport" },
+			{ question: "Welcher Planet ist am weitesten von der Sonne entfernt?", answer: "Neptun" },
+			{ question: "Wer schrieb Romeo und Julia?", answer: "Shakespeare" },
+			{ question: "Welches Tier hat die laengste Traechtigkeitsdauer?", answer: "Elefant (ca. 22 Monate)" },
+			{ question: "Welches Organ produziert Insulin?", answer: "Bauchspeicheldrüse" },
+			{ question: "Wer erfand das Telefon?", answer: "Alexander Graham Bell" },
+			{ question: "Welcher Fluss fliesst durch London?", answer: "Themse" },
+			{ question: "Was bedeutet das Kuerzel HTML?", answer: "HyperText Markup Language" },
+			{ question: "Welche Zelle hat keinen Zellkern?", answer: "Rote Blutkoerperchen (Erythrozyten)" },
 			{ question: "Wie viele Laender gibt es weltweit ungefaehr?", answer: "195" },
+			{ question: "Wie viele Mal hat Brasilien die Fussball-WM gewonnen?", answer: "5" },
+			{ question: "Wie viele Elemente hat das Periodensystem aktuell?", answer: "118" },
 			{ question: "Wie viele Liter Blut hat ein erwachsener Mensch ungefaehr?", answer: "5 Liter" },
 			{ question: "Wie viele Muskeln hat der menschliche Koerper?", answer: "ueber 600" }
+			
+		
 		];
+
 
 		const AUCTION_QUESTION_POOL = [
 			"Wie viele Laender in Afrika kannst du in 30 Sekunden nennen?",
@@ -1302,113 +1348,42 @@
 			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
 			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
 			"Wie viele Hauptstädte kannst du in 30 Sekunden nennen?",
+			"Wie viele Laender, deren Name mit 'stan' endet, kannst du in 30 Sekunden nennen?",
+			"Wie viele Laender in der arabischen Welt kannst du in 30 Sekunden nennen?",
+			"Wie viele Hormonarten des menschlichen Koerpers kannst du in 30 Sekunden nennen?",
+			"Wie viele Organe des menschlichen Koerpers kannst du in 30 Sekunden nennen?",
+			"Wie viele Programmiersprachen, die mit einem Buchstaben beginnen, kannst du in 30 Sekunden nennen?",
+			"Wie viele Laender, die mehr als 100 Millionen Einwohner haben, kannst du nennen?",
 			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
 			"Wie viele Länder in Asien kannst du in 30 Sekunden nennen?",
 			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
-			"Wie viele deutsche Städte kannst du in 30 Sekunden nennen?"
+			"Wie viele deutsche Städte kannst du in 30 Sekunden nennen?",
+			"Wie viele Tiere kannst du in 30 Sekunden nennen?",
+			"Wie viele Sprachen kannst du in 30 Sekunden nennen?",
+			"Wie viele Farben kannst du in 30 Sekunden nennen?",
+			"Wie viele Zahlen zwischen 1 und 100 kannst du in 30 Sekunden nennen?",
+			"Wie viele Möbelstücke kannst du in 30 Sekunden nennen?"
 			
 		];
 
 		const QUESTION_BANK_RAW = `Hauptstadt Deutschland? — Berlin
 Was ist das Groesste Land? — Russland
 Was ist der Hoechste Berg? — Everest
-Groesster Ozean? — Pazifik
-Schnellster Mensch? — Bolt
-Erster Mensch Mond? — Armstrong
-Hauptstadt Frankreich? — Paris
-Hauptstadt Spanien? — Madrid
-Hauptstadt Italien? — Rom
-Hauptstadt Japan? — Tokio
-Groesster Kontinent? — Asien
-Laengster Fluss? — Nil
-Hauptstadt USA? — Washington
-Praesident USA? — Biden
-Groesste Insel? — Groenland
-Groesster See? — Kaspisches
-Hauptstadt Kanada? — Ottawa
-Hauptstadt China? — Peking
-Hauptstadt Russland? — Moskau
-Hauptstadt Indien? — Neu-Delhi
-Groesste Wueste? — Sahara
-Hauptstadt Aegypten? — Kairo
-Fussball WM Sieger 2022? — Argentinien
-Basketball Legende? — Jordan
-Tennis Nummer Eins? — Djokovic
-Formel1 Rekord? — Hamilton
-Groesstes Stadion? — Rungrado
-Olympische Spiele Ursprung? — Griechenland
-Hauptstadt Brasilien? — Brasilia
-Hauptstadt Argentinien? — Buenos Aires
-Groesste Religion? — Christentum
-Islam Prophet? — Mohammed
-Bibel Sprache? — Hebraeisch
-Hindu Gott? — Brahma
-Buddha Herkunft? — Indien
-Judentum Buch? — Tora
-Christentum Symbol? — Kreuz
-Islam Buch? — Koran
-Groesstes Tier? — Blauwal
-Schnellstes Tier? — Gepard
-Groesster Planet? — Jupiter
-Kleinster Planet? — Merkur
-Roter Planet? — Mars
-Erde Satellit? — Mond
-Sonne Stern? — Ja
-Wasser Formel? — H2O
-Salz Formel? — NaCl
-Lichtgeschwindigkeit? — 300000 km/s
-Erfinder Telefon? — Bell
-Erfinder Gluehbirne? — Edison
-Hauptstadt Tuerkei? — Ankara
-Hauptstadt Griechenland? — Athen
-Hauptstadt Niederlande? — Amsterdam
-Hauptstadt Belgien? — Bruessel
-Hauptstadt Schweiz? — Bern
-Hauptstadt Oesterreich? — Wien
-Hauptstadt Polen? — Warschau
-Hauptstadt Schweden? — Stockholm
-Hauptstadt Norwegen? — Oslo
-Hauptstadt Finnland? — Helsinki
-Groesster Vulkan? — Mauna Loa
-Tiefster Punkt? — Marianengraben
-Erste Zivilisation? — Sumer
-Roemischer Kaiser? — Caesar
-Franzoesische Revolution? — 1789
-Zweiter Weltkrieg Ende? — 1945
-EU Gruendung? — 1993
-NATO Zweck? — Verteidigung
-UNO Sitz? — New York
-Euro Einfuehrung? — 2002
-Schnellster Vogel? — Falke
-Groesster Vogel? — Strauss
-Laengstes Tier? — Blauwal
-Giftigste Schlange? — Inlandtaipan
-Groesster Wald? — Amazonas
-Amazonas Land? — Brasilien
-Sahara Kontinent? — Afrika
-Alpen Lage? — Europa
-Himalaya Lage? — Asien
-Nordpol Ort? — Arktis
-Suedpol Ort? — Antarktis
-Internet Erfinder? — Berners-Lee
-Computer Firma? — IBM
-iPhone Hersteller? — Apple
-Windows Firma? — Microsoft
-Tesla Gruender? — Musk
-Facebook Gruender? — Zuckerberg
-Google Gruender? — Page
-YouTube Kauf? — Google
-Amazon Gruender? — Bezos
-Fussball Spieler? — Messi
-Basketball Spieler? — Jordan
-Tennis Spieler? — Federer
-Boxen Legende? — Ali
-Schwimmen Rekord? — Phelps
-Leichtathletik Star? — Bolt
-Golf Spieler? — Woods
-Formel1 Fahrer? — Schumacher
-Eishockey Liga? — NHL
-Handball Land? — Deutschland
+Welche Hauptstadt liegt am hoechsten ueber dem Meeresspiegel? — La Paz (Bolivien)
+Wer erfand das World Wide Web? — Tim Berners-Lee
+Welches Tier hat den hoechsten Blutdruck? — Giraffe
+In welchem Land wurde die Demokratie erfunden? — Griechenland
+Welche Sprache hat die meisten Muttersprachler weltweit? — Mandarin-Chinesisch
+Welches Element hat die hoechste Schmelztemperatur? — Wolfram
+Welcher Komponist wurde taubstumm und schrieb trotzdem Sinfonien? — Beethoven
+Welche Stadt war die erste Hauptstadt der USA? — Philadelphia
+Welcher Kuenstler schnitt sich ein Ohr ab? — Van Gogh
+In welchem Jahr landete der erste Mensch auf dem Mond? — 1969
+Welches Gas macht Luftballons leichter als Luft? — Helium
+Was ist die kleinste Einheit eines chemischen Elements? — Atom
+Wie nennt man einen Winkel, der groesser als 180 Grad ist? — Reflex- oder ueberstumpfer Winkel
+Welches Land hat die aelteste noch existierende Verfassung? — USA
+was ist der Groesster Ozean? — Pazifik
 Was ist die Hauptstadt von Griechenland? — Athen
 Nenne ein bekanntes deutsches Auto. — Audi
 Welches Tier lebt im Zoo und isst viele Bananen? — Affe
@@ -1511,7 +1486,112 @@ Wie viele Kontinente gibt es? — 7
 Wie viele Ozeane gibt es? — 5
 Wie heißt der vierte Planet von der Sonne? — Mars
 Wie heißt der sechste Planet von der Sonne? — Saturn
-Welches Instrument misst den Luftdruck? — Barometer`;
+Welches Instrument misst den Luftdruck? — Barometer
+Welches Zeichen steht in der Physik fuer elektrische Spannung? — Volt (V)
+Wie heisst der Prozess, bei dem ein Feststoff direkt zu Gas wird? — Sublimation
+Wie nennt man den Raum ausserhalb der Erdatmosphaere? — Vakuum
+Wie nennt man die Umwandlung von Wasser in Wasserdampf? — Verdunstung / Verdampfung
+Welches Zeichen beschreibt in der Mathematik die Wurzel? — Radikalzeichen (√)
+Welches Konzept beschreibt in der Informatik unendliche Wiederholung? — Rekursion
+Wie heisst der Vorgang, bei dem Licht an einer Grenzflaeche gebrochen wird? — Refraktion
+Schnellster Mensch? — Bolt
+Erster Mensch Mond? — Armstrong
+Hauptstadt Frankreich? — Paris
+Hauptstadt Spanien? — Madrid
+Hauptstadt Italien? — Rom
+Hauptstadt Japan? — Tokio
+Groesster Kontinent? — Asien
+Laengster Fluss? — Nil
+Hauptstadt USA? — Washington
+Praesident USA? — Biden
+Groesste Insel? — Groenland
+Groesster See? — Kaspisches
+Hauptstadt Kanada? — Ottawa
+Hauptstadt China? — Peking
+Hauptstadt Russland? — Moskau
+Hauptstadt Indien? — Neu-Delhi
+Groesste Wueste? — Sahara
+Hauptstadt Aegypten? — Kairo
+Fussball WM Sieger 2022? — Argentinien
+Basketball Legende? — Jordan
+Tennis Nummer Eins? — Djokovic
+Formel1 Rekord? — Hamilton
+Groesstes Stadion? — Rungrado
+Olympische Spiele Ursprung? — Griechenland
+Hauptstadt Brasilien? — Brasilia
+Hauptstadt Argentinien? — Buenos Aires
+Groesste Religion? — Christentum
+Islam Prophet? — Mohammed
+Bibel Sprache? — Hebraeisch
+Hindu Gott? — Brahma
+Buddha Herkunft? — Indien
+Judentum Buch? — Tora
+Christentum Symbol? — Kreuz
+Islam Buch? — Koran
+Groesstes Tier? — Blauwal
+Schnellstes Tier? — Gepard
+Groesster Planet? — Jupiter
+Kleinster Planet? — Merkur
+Roter Planet? — Mars
+Erde Satellit? — Mond
+Sonne Stern? — Ja
+Wasser Formel? — H2O
+Salz Formel? — NaCl
+Lichtgeschwindigkeit? — 300000 km/s
+Erfinder Telefon? — Bell
+Erfinder Gluehbirne? — Edison
+Hauptstadt Tuerkei? — Ankara
+Hauptstadt Griechenland? — Athen
+Hauptstadt Niederlande? — Amsterdam
+Hauptstadt Belgien? — Bruessel
+Hauptstadt Schweiz? — Bern
+Hauptstadt Oesterreich? — Wien
+Hauptstadt Polen? — Warschau
+Hauptstadt Schweden? — Stockholm
+Hauptstadt Norwegen? — Oslo
+Hauptstadt Finnland? — Helsinki
+Groesster Vulkan? — Mauna Loa
+Tiefster Punkt? — Marianengraben
+Erste Zivilisation? — Sumer
+Roemischer Kaiser? — Caesar
+Franzoesische Revolution? — 1789
+Zweiter Weltkrieg Ende? — 1945
+EU Gruendung? — 1993
+NATO Zweck? — Verteidigung
+UNO Sitz? — New York
+Euro Einfuehrung? — 2002
+Schnellster Vogel? — Falke
+Groesster Vogel? — Strauss
+Laengstes Tier? — Blauwal
+Giftigste Schlange? — Inlandtaipan
+Groesster Wald? — Amazonas
+Amazonas Land? — Brasilien
+Sahara Kontinent? — Afrika
+Alpen Lage? — Europa
+Himalaya Lage? — Asien
+Nordpol Ort? — Arktis
+Suedpol Ort? — Antarktis
+Internet Erfinder? — Berners-Lee
+Computer Firma? — IBM
+iPhone Hersteller? — Apple
+Windows Firma? — Microsoft
+Tesla Gruender? — Musk
+Facebook Gruender? — Zuckerberg
+Google Gruender? — Page
+YouTube Kauf? — Google
+Amazon Gruender? — Bezos
+Fussball Spieler? — Messi
+Basketball Spieler? — Jordan
+Tennis Spieler? — Federer
+Boxen Legende? — Ali
+Schwimmen Rekord? — Phelps
+Leichtathletik Star? — Bolt
+Golf Spieler? — Woods
+Formel1 Fahrer? — Schumacher
+Eishockey Liga? — NHL
+Handball Land? — Deutschland;
+		`;
+
 
 		const QUESTION_BANK = QUESTION_BANK_RAW
 			.split("\n")
@@ -1852,9 +1932,19 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 			minusPopupOverlay.classList.remove("hidden");
 		}
 
-		function pickRandomAuctionQuestion() {
-			const idx = Math.floor(Math.random() * AUCTION_QUESTION_POOL.length);
-			return AUCTION_QUESTION_POOL[idx];
+		function pickRandomAuctionQuestion(previousQuestion = "") {
+			if (AUCTION_QUESTION_POOL.length === 0) {
+				return "Keine Auktionsfrage verfuegbar.";
+			}
+			if (AUCTION_QUESTION_POOL.length === 1) {
+				return AUCTION_QUESTION_POOL[0];
+			}
+
+			let candidate = AUCTION_QUESTION_POOL[Math.floor(Math.random() * AUCTION_QUESTION_POOL.length)];
+			while (candidate === previousQuestion) {
+				candidate = AUCTION_QUESTION_POOL[Math.floor(Math.random() * AUCTION_QUESTION_POOL.length)];
+			}
+			return candidate;
 		}
 
 		function addThreeConsecutiveColoredCells(className) {
@@ -1973,12 +2063,18 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 				auctionTimer = null;
 			}
 			auctionPopupOverlay.classList.add("hidden");
+			auctionPopupStartBtn.disabled = false;
+			auctionPopupAnotherBtn.disabled = false;
+			auctionPopupStartWrap.classList.remove("hidden");
+			auctionPopupResultActions.classList.add("hidden");
+			auctionPopupTimerEl.textContent = "Zeit: 30 Sekunden";
 		}
 
 		function startAuctionCountdown() {
 			let remaining = 30;
 			auctionPopupTimerEl.textContent = `Zeit: ${remaining} Sekunden`;
 			auctionPopupStartBtn.disabled = true;
+			auctionPopupAnotherBtn.disabled = true;
 
 			if (auctionTimer) {
 				clearInterval(auctionTimer);
@@ -1999,8 +2095,10 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 
 		function openAuctionPopup(teamClass) {
 			auctionTeamClass = teamClass;
+			auctionCardEl = teamClass === "active-green" ? team1AuctionIcon : team2AuctionIcon;
 			auctionPopupQuestionEl.textContent = pickRandomAuctionQuestion();
 			auctionPopupTimerEl.textContent = "Zeit: 30 Sekunden";
+			auctionPopupAnotherBtn.disabled = false;
 			auctionPopupStartBtn.disabled = false;
 			auctionPopupStartWrap.classList.remove("hidden");
 			auctionPopupResultActions.classList.add("hidden");
@@ -2108,13 +2206,11 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 
 		team1AuctionIcon.addEventListener("click", (event) => {
 			event.stopPropagation();
-			if (!markCardUsed(team1AuctionIcon)) return;
 			openAuctionPopup("active-green");
 		});
 
 		team2AuctionIcon.addEventListener("click", (event) => {
 			event.stopPropagation();
-			if (!markCardUsed(team2AuctionIcon)) return;
 			openAuctionPopup("active-orange");
 		});
 
@@ -2132,12 +2228,25 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 			startAuctionCountdown();
 		});
 
+		auctionPopupAnotherBtn.addEventListener("click", () => {
+			auctionPopupQuestionEl.textContent = pickRandomAuctionQuestion(auctionPopupQuestionEl.textContent);
+		});
+
+		auctionPopupCloseBtn.addEventListener("click", () => {
+			closeAuctionPopup();
+		});
+
 		auctionPopupSuccessBtn.addEventListener("click", () => {
+			if (auctionCardEl) {
+				markCardUsed(auctionCardEl);
+			}
 			addThreeConsecutiveColoredCells(auctionTeamClass);
+			auctionCardEl = null;
 			closeAuctionPopup();
 		});
 
 		auctionPopupFailBtn.addEventListener("click", () => {
+			auctionCardEl = null;
 			closeAuctionPopup();
 		});
 
