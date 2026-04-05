@@ -14,6 +14,13 @@
 			--ink: #21113f;
 			--panel: rgba(255, 255, 255, 0.16);
 			--panel-border: rgba(255, 255, 255, 0.24);
+			--ui-scale: 1;
+			--app-height: 100dvh;
+		}
+
+		html, body {
+			width: 100%;
+			overflow-x: hidden;
 		}
 
 		* {
@@ -139,8 +146,8 @@
 		}
 
 		.menu-wrap {
-			width: min(92vw, 480px);
-			max-height: calc(100dvh - 28px);
+			width: min(92vw, calc(480px * var(--ui-scale)));
+			max-height: calc(var(--app-height) - 28px);
 			overflow: auto;
 			background: var(--panel);
 			border: 1px solid var(--panel-border);
@@ -190,8 +197,8 @@
 
 		.questions-mode-wrap {
 			direction: ltr;
-			width: min(92vw, 560px);
-			max-height: calc(100dvh - 28px);
+			width: min(92vw, calc(560px * var(--ui-scale)));
+			max-height: calc(var(--app-height) - 28px);
 			overflow: auto;
 			background: rgba(36, 9, 70, 0.9);
 			border: 1px solid rgba(255, 255, 255, 0.12);
@@ -260,9 +267,11 @@
 
 		.board-layout {
 			display: grid;
-			grid-template-columns: 2.2fr 1fr;
+			grid-template-columns: minmax(0, 2.2fr) minmax(320px, 1fr);
 			width: 100%;
-			height: 100vh;
+			height: calc(var(--app-height) - 20px);
+			max-height: calc(var(--app-height) - 20px);
+			overflow: hidden;
 		}
 
 		.board-left {
@@ -299,12 +308,11 @@
 			flex-direction: column;
 			align-items: center;
 			--hex-border: 8px;
-			--hex-w: clamp(92px, 6.8vw, 122px);
-			--hex-h: clamp(102px, 7.4vw, 132px);
+			--hex-w: clamp(44px, calc(min(6.8vw, 8.8vh) * var(--ui-scale)), 122px);
+			--hex-h: clamp(50px, calc(min(7.4vw, 9.5vh) * var(--ui-scale)), 132px);
 			gap: 0;
 			padding-top: 0;
 			width: fit-content;
-			scale: 0.96;
 		}
 
 		.hex-row {
@@ -400,7 +408,7 @@
 		}
 
 		.round-title {
-			font-size: clamp(2rem, 3vw, 3.2rem);
+			font-size: clamp(1.7rem, calc(3vw * var(--ui-scale)), 3.2rem);
 			font-weight: 900;
 			line-height: 0.95;
 			text-align: center;
@@ -462,7 +470,7 @@
 		}
 
 		.question-text {
-			font-size: clamp(1.25rem, 1.7vw, 1.75rem);
+			font-size: clamp(1.05rem, calc(1.7vw * var(--ui-scale)), 1.75rem);
 			font-weight: 800;
 			line-height: 1.4;
 		}
@@ -490,7 +498,7 @@
 			border: none;
 			border-radius: 13px;
 			padding: 11px;
-			font-size: 1.7rem;
+			font-size: clamp(1.15rem, calc(1.7vw * var(--ui-scale)), 1.7rem);
 			font-weight: 900;
 			color: #2f2645;
 			cursor: pointer;
@@ -514,7 +522,7 @@
 			border-radius: 999px;
 			padding: 8px 12px;
 			font-weight: 900;
-			font-size: 1.9rem;
+			font-size: clamp(1.3rem, calc(1.9vw * var(--ui-scale)), 1.9rem);
 			line-height: 1;
 			border: 2px solid rgba(255, 255, 255, 0.24);
 		}
@@ -530,14 +538,14 @@
 		}
 
 		.score-pill {
-			width: 52px;
-			height: 55px;
+			width: calc(52px * var(--ui-scale));
+			height: calc(55px * var(--ui-scale));
 			justify-self: end;
 			background: currentColor;
 			clip-path: polygon(25% 7%, 75% 7%, 98% 50%, 75% 93%, 25% 93%, 2% 50%);
 			display: grid;
 			place-items: center;
-			font-size: 1.5rem;
+			font-size: clamp(1rem, calc(1.5vw * var(--ui-scale)), 1.5rem);
 			color: #2a1f45;
 		}
 
@@ -556,8 +564,8 @@
 		.team-auction-icon {
 			position: relative;
 			justify-self: center;
-			width: 55px;
-			height: 53px;
+			width: calc(55px * var(--ui-scale));
+			height: calc(53px * var(--ui-scale));
 			object-fit: contain;
 			display: block;
 			cursor: pointer;
@@ -578,7 +586,7 @@
 		}
 
 		.countdown-card {
-			width: min(88vw, 520px);
+			width: min(88vw, calc(520px * var(--ui-scale)));
 			background: rgba(43, 16, 77, 0.95);
 			border: 2px solid rgba(255, 255, 255, 0.22);
 			border-radius: 18px;
@@ -588,7 +596,7 @@
 		}
 
 		.countdown-text {
-			font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+			font-size: clamp(1rem, calc(2.8vw * var(--ui-scale)), 1.6rem);
 			font-weight: 800;
 			line-height: 1.5;
 			color: #fff8e8;
@@ -597,7 +605,7 @@
 
 		.countdown-number {
 			display: inline-block;
-			font-size: clamp(2.2rem, 6.5vw, 3.2rem);
+			font-size: clamp(1.8rem, calc(6.5vw * var(--ui-scale)), 3.2rem);
 			font-weight: 900;
 			color: #ffe100;
 			text-shadow: 0 3px 0 rgba(42, 16, 73, 0.85);
@@ -617,7 +625,7 @@
 		}
 
 		.minus-popup-card {
-			width: min(92vw, 640px);
+			width: min(92vw, calc(640px * var(--ui-scale)));
 			max-height: min(86dvh, 640px);
 			overflow: auto;
 			background: rgba(43, 16, 77, 0.97);
@@ -629,14 +637,14 @@
 		}
 
 		.minus-popup-title {
-			font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+			font-size: clamp(1.05rem, calc(2.8vw * var(--ui-scale)), 1.7rem);
 			font-weight: 900;
 			color: #ffe100;
 			margin-bottom: 12px;
 		}
 
 		.minus-popup-question {
-			font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+			font-size: clamp(0.98rem, calc(2.4vw * var(--ui-scale)), 1.35rem);
 			font-weight: 800;
 			line-height: 1.45;
 			color: #ffffff;
@@ -644,7 +652,7 @@
 		}
 
 		.minus-popup-answer {
-			font-size: clamp(1rem, 2.2vw, 1.2rem);
+			font-size: clamp(0.95rem, calc(2.2vw * var(--ui-scale)), 1.2rem);
 			font-weight: 800;
 			line-height: 1.35;
 			color: #c7ffbf;
@@ -661,7 +669,7 @@
 			border: none;
 			border-radius: 12px;
 			padding: 12px;
-			font-size: 1.15rem;
+			font-size: clamp(1rem, calc(1.15vw * var(--ui-scale)), 1.15rem);
 			font-weight: 900;
 			color: #2f2645;
 			cursor: pointer;
@@ -689,7 +697,7 @@
 		}
 
 		.auction-popup-card {
-			width: min(92vw, 640px);
+			width: min(92vw, calc(640px * var(--ui-scale)));
 			max-height: min(86dvh, 640px);
 			overflow: auto;
 			background: rgba(43, 16, 77, 0.97);
@@ -701,14 +709,14 @@
 		}
 
 		.auction-popup-title {
-			font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+			font-size: clamp(1.05rem, calc(2.8vw * var(--ui-scale)), 1.7rem);
 			font-weight: 900;
 			color: #ffe100;
 			margin-bottom: 12px;
 		}
 
 		.auction-popup-question {
-			font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+			font-size: clamp(0.98rem, calc(2.4vw * var(--ui-scale)), 1.35rem);
 			font-weight: 800;
 			line-height: 1.45;
 			color: #ffffff;
@@ -716,7 +724,7 @@
 		}
 
 		.auction-popup-timer {
-			font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+			font-size: clamp(1rem, calc(2.5vw * var(--ui-scale)), 1.4rem);
 			font-weight: 900;
 			color: #c7ffbf;
 			margin-bottom: 16px;
@@ -742,7 +750,7 @@
 			border: none;
 			border-radius: 12px;
 			padding: 12px;
-			font-size: 1.15rem;
+			font-size: clamp(1rem, calc(1.15vw * var(--ui-scale)), 1.15rem);
 			font-weight: 900;
 			color: #2f2645;
 			cursor: pointer;
@@ -765,14 +773,15 @@
 		@media (max-width: 1080px) {
 			.board-layout {
 				grid-template-columns: 1fr;
-				grid-template-rows: auto auto;
-				overflow: auto;
-				height: 100svh;
+				grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
+				overflow: hidden;
+				height: calc(var(--app-height) - 20px);
+				max-height: calc(var(--app-height) - 20px);
 			}
 
 			.board-left {
-				min-height: 44svh;
 				padding: 12px;
+				min-height: 0;
 			}
 
 			.hex-row.offset {
@@ -783,10 +792,11 @@
 				border-left: none;
 				border-top: 6px solid #3f2073;
 				padding: 12px;
+				overflow-y: auto;
 			}
 
 			.round-title {
-				font-size: 2.4rem;
+				font-size: clamp(1.7rem, calc(2.4vw * var(--ui-scale)), 2.4rem);
 			}
 
 			.board-top {
@@ -813,19 +823,21 @@
 			}
 
 			.board-layout {
-				height: auto;
-				min-height: 100svh;
+				height: calc(var(--app-height) - 16px);
+				min-height: calc(var(--app-height) - 16px);
+				grid-template-columns: 1fr;
+				grid-template-rows: minmax(0, 1.05fr) minmax(0, 1fr);
+				overflow: hidden;
 			}
 
 			.board-left {
-				min-height: 42svh;
 				padding: 6px;
+				min-height: 0;
 			}
 
 			.hex-board {
-				--hex-w: clamp(58px, 15vw, 76px);
-				--hex-h: clamp(66px, 16vw, 84px);
-				scale: 1;
+				--hex-w: clamp(42px, calc(min(14vw, 8.5vh) * var(--ui-scale)), 76px);
+				--hex-h: clamp(48px, calc(min(15vw, 9.5vh) * var(--ui-scale)), 84px);
 			}
 
 			.hex-row .hex-cell + .hex-cell {
@@ -842,10 +854,11 @@
 
 			.board-right {
 				padding: 10px 10px 14px;
+				overflow-y: auto;
 			}
 
 			.round-title {
-				font-size: 2.1rem;
+				font-size: clamp(1.55rem, calc(2.1vw * var(--ui-scale)), 2.1rem);
 			}
 
 			.board-top {
@@ -869,7 +882,7 @@
 			}
 
 			.question-text {
-				font-size: 1.8rem;
+				font-size: clamp(1.25rem, calc(1.8vw * var(--ui-scale)), 1.8rem);
 			}
 
 			.answer-line {
@@ -887,7 +900,7 @@
 			}
 
 			.score-item {
-				font-size: 2rem;
+				font-size: clamp(1.35rem, calc(2vw * var(--ui-scale)), 2rem);
 				padding: 7px 10px;
 			}
 
@@ -927,9 +940,11 @@
 			}
 
 			.board-layout {
-				grid-template-columns: 2.05fr 1fr;
+				grid-template-columns: minmax(0, 1.85fr) minmax(280px, 1fr);
 				grid-template-rows: 1fr;
-				height: 100svh;
+				height: calc(var(--app-height) - 18px);
+				max-height: calc(var(--app-height) - 18px);
+				overflow: hidden;
 			}
 
 			.board-left {
@@ -938,9 +953,8 @@
 			}
 
 			.hex-board {
-				--hex-w: clamp(54px, 6.5vw, 84px);
-				--hex-h: clamp(62px, 7.2vw, 92px);
-				scale: 1;
+				--hex-w: clamp(42px, calc(min(6.5vw, 8.3vh) * var(--ui-scale)), 84px);
+				--hex-h: clamp(48px, calc(min(7.2vw, 9vh) * var(--ui-scale)), 92px);
 			}
 
 			.hex-row.offset {
@@ -959,10 +973,11 @@
 				border-left: 5px solid #3f2073;
 				border-top: none;
 				padding: 8px 10px;
+				overflow-y: auto;
 			}
 
 			.round-title {
-				font-size: 2.2rem;
+				font-size: clamp(1.6rem, calc(2.2vw * var(--ui-scale)), 2.2rem);
 			}
 
 			.board-top {
@@ -986,7 +1001,7 @@
 			}
 
 			.question-text {
-				font-size: 1.5rem;
+				font-size: clamp(1.15rem, calc(1.5vw * var(--ui-scale)), 1.5rem);
 			}
 
 			.answer-line {
@@ -1011,7 +1026,7 @@
 			}
 
 			.score-item {
-				font-size: 1.9rem;
+				font-size: clamp(1.3rem, calc(1.9vw * var(--ui-scale)), 1.9rem);
 				padding: 5px 10px;
 			}
 
@@ -1255,11 +1270,20 @@
 		const roundTitleRedEl = document.querySelector(".round-title .line-red");
 		const team1ScoreEl = team1Btn.querySelector(".score-pill");
 		const team2ScoreEl = team2Btn.querySelector(".score-pill");
+		const rootStyle = document.documentElement.style;
 		let countdownTimer = null;
 		let auctionTimer = null;
 		let auctionTeamClass = "";
 		let minusTargetClass = "";
 		let minusSelfClass = "";
+
+		function updateResponsiveMetrics() {
+			const width = window.innerWidth;
+			const height = window.innerHeight;
+			const scale = Math.max(0.72, Math.min(1, Math.min(width / 1280, height / 900)));
+			rootStyle.setProperty("--ui-scale", scale.toFixed(3));
+			rootStyle.setProperty("--app-height", `${height}px`);
+		}
 
 		const MINUS_QUESTION_POOL = [
 			{ question: "Wie viele Knochen hat ein erwachsener Mensch?", answer: "206" },
@@ -2118,6 +2142,9 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 		});
 
 		updateRoundUI();
+		updateResponsiveMetrics();
+		window.addEventListener("resize", updateResponsiveMetrics);
+		window.addEventListener("orientationchange", updateResponsiveMetrics);
 		setTimeout(openMenuScreen, 2500);
 		startButton.addEventListener("click", () => {
 			resetMatch();
