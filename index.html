@@ -508,7 +508,7 @@
 
 		.score-item {
 			display: grid;
-			grid-template-columns: auto auto auto 1fr auto;
+			grid-template-columns: auto auto auto auto minmax(0, 1fr) auto;
 			align-items: center;
 			column-gap: 10px;
 			border-radius: 999px;
@@ -532,6 +532,7 @@
 		.score-pill {
 			width: 52px;
 			height: 55px;
+			justify-self: end;
 			background: currentColor;
 			clip-path: polygon(25% 7%, 75% 7%, 98% 50%, 75% 93%, 25% 93%, 2% 50%);
 			display: grid;
@@ -551,7 +552,8 @@
 		}
 
 		.team-block-icon,
-		.team-minus-icon {
+		.team-minus-icon,
+		.team-auction-icon {
 			position: relative;
 			justify-self: center;
 			width: 55px;
@@ -599,6 +601,163 @@
 			font-weight: 900;
 			color: #ffe100;
 			text-shadow: 0 3px 0 rgba(42, 16, 73, 0.85);
+		}
+
+		.minus-popup-overlay {
+			position: fixed;
+			inset: 0;
+			display: grid;
+			place-items: center;
+			background: rgba(20, 8, 35, 0.6);
+			z-index: 5100;
+		}
+
+		.minus-popup-overlay.hidden {
+			display: none;
+		}
+
+		.minus-popup-card {
+			width: min(92vw, 640px);
+			max-height: min(86dvh, 640px);
+			overflow: auto;
+			background: rgba(43, 16, 77, 0.97);
+			border: 2px solid rgba(255, 255, 255, 0.26);
+			border-radius: 18px;
+			padding: 22px 20px;
+			text-align: center;
+			box-shadow: 0 22px 45px rgba(12, 2, 30, 0.45);
+		}
+
+		.minus-popup-title {
+			font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+			font-weight: 900;
+			color: #ffe100;
+			margin-bottom: 12px;
+		}
+
+		.minus-popup-question {
+			font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+			font-weight: 800;
+			line-height: 1.45;
+			color: #ffffff;
+			margin-bottom: 10px;
+		}
+
+		.minus-popup-answer {
+			font-size: clamp(1rem, 2.2vw, 1.2rem);
+			font-weight: 800;
+			line-height: 1.35;
+			color: #c7ffbf;
+			margin-bottom: 18px;
+		}
+
+		.minus-popup-actions {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+		}
+
+		.minus-popup-btn {
+			border: none;
+			border-radius: 12px;
+			padding: 12px;
+			font-size: 1.15rem;
+			font-weight: 900;
+			color: #2f2645;
+			cursor: pointer;
+		}
+
+		.minus-popup-btn.correct {
+			background: #7ae03a;
+		}
+
+		.minus-popup-btn.wrong {
+			background: #ff8b35;
+		}
+
+		.auction-popup-overlay {
+			position: fixed;
+			inset: 0;
+			display: grid;
+			place-items: center;
+			background: rgba(20, 8, 35, 0.6);
+			z-index: 5200;
+		}
+
+		.auction-popup-overlay.hidden {
+			display: none;
+		}
+
+		.auction-popup-card {
+			width: min(92vw, 640px);
+			max-height: min(86dvh, 640px);
+			overflow: auto;
+			background: rgba(43, 16, 77, 0.97);
+			border: 2px solid rgba(255, 255, 255, 0.26);
+			border-radius: 18px;
+			padding: 22px 20px;
+			text-align: center;
+			box-shadow: 0 22px 45px rgba(12, 2, 30, 0.45);
+		}
+
+		.auction-popup-title {
+			font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+			font-weight: 900;
+			color: #ffe100;
+			margin-bottom: 12px;
+		}
+
+		.auction-popup-question {
+			font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+			font-weight: 800;
+			line-height: 1.45;
+			color: #ffffff;
+			margin-bottom: 14px;
+		}
+
+		.auction-popup-timer {
+			font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+			font-weight: 900;
+			color: #c7ffbf;
+			margin-bottom: 16px;
+		}
+
+		.auction-popup-start-wrap,
+		.auction-popup-result-actions {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 10px;
+		}
+
+		.auction-popup-result-actions {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.auction-popup-start-wrap.hidden,
+		.auction-popup-result-actions.hidden {
+			display: none;
+		}
+
+		.auction-popup-btn {
+			border: none;
+			border-radius: 12px;
+			padding: 12px;
+			font-size: 1.15rem;
+			font-weight: 900;
+			color: #2f2645;
+			cursor: pointer;
+		}
+
+		.auction-popup-btn.start {
+			background: #ffe100;
+		}
+
+		.auction-popup-btn.success {
+			background: #7ae03a;
+		}
+
+		.auction-popup-btn.fail {
+			background: #ff8b35;
 		}
 
 
@@ -739,7 +898,8 @@
 			}
 
 			.team-block-icon,
-			.team-minus-icon {
+			.team-minus-icon,
+			.team-auction-icon {
 				width: 30px;
 				height: 30px;
 			}
@@ -862,7 +1022,8 @@
 			}
 
 			.team-block-icon,
-			.team-minus-icon {
+			.team-minus-icon,
+			.team-auction-icon {
 				width: 28px;
 				height: 28px;
 			}
@@ -992,14 +1153,16 @@
 				<div class="score-list">
 					<div id="team-1-btn" class="score-item team-1" style="cursor: pointer;">
 						<span>Team 1</span>
-						<img class="team-minus-icon" src="Minuskarten.png" alt="Minus-Symbol">
+						<img id="team-1-minus-icon" class="team-minus-icon" src="Minuskarten.png" alt="Minus-Symbol">
 						<img id="team-1-block-icon" class="team-block-icon" src="Spielkarte%20mit%20No-Symbol.png" alt="Sperr-Symbol">
+						<img id="team-1-auction-icon" class="team-auction-icon" src="Auktionskarte.png" alt="Auktionskarte">
 						<span class="score-pill">0</span>
 					</div>
 					<div id="team-2-btn" class="score-item team-2" style="cursor: pointer;">
 						<span>Team 2</span>
-						<img class="team-minus-icon" src="Minuskarten.png" alt="Minus-Symbol">
+						<img id="team-2-minus-icon" class="team-minus-icon" src="Minuskarten.png" alt="Minus-Symbol">
 						<img id="team-2-block-icon" class="team-block-icon" src="Spielkarte%20mit%20No-Symbol.png" alt="Sperr-Symbol">
+						<img id="team-2-auction-icon" class="team-auction-icon" src="Auktionskarte.png" alt="Auktionskarte">
 						<span class="score-pill">0</span>
 					</div>
 				</div>
@@ -1011,6 +1174,33 @@
 		<div class="countdown-card">
 			<p id="countdown-text" class="countdown-text"></p>
 			<div id="countdown-number" class="countdown-number">10</div>
+		</div>
+	</div>
+
+	<div id="minus-popup-overlay" class="minus-popup-overlay hidden" aria-live="polite" aria-atomic="true">
+		<div class="minus-popup-card">
+			<h3 class="minus-popup-title">Minus-Frage</h3>
+			<p id="minus-popup-question" class="minus-popup-question"></p>
+			<p id="minus-popup-answer" class="minus-popup-answer"></p>
+			<div class="minus-popup-actions">
+				<button id="minus-popup-correct" class="minus-popup-btn correct">Richtig</button>
+				<button id="minus-popup-wrong" class="minus-popup-btn wrong">Falsch</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="auction-popup-overlay" class="auction-popup-overlay hidden" aria-live="polite" aria-atomic="true">
+		<div class="auction-popup-card">
+			<h3 class="auction-popup-title">Auktionskarte</h3>
+			<p id="auction-popup-question" class="auction-popup-question"></p>
+			<p id="auction-popup-timer" class="auction-popup-timer">Zeit: 30 Sekunden</p>
+			<div id="auction-popup-start-wrap" class="auction-popup-start-wrap">
+				<button id="auction-popup-start" class="auction-popup-btn start">Starten</button>
+			</div>
+			<div id="auction-popup-result-actions" class="auction-popup-result-actions hidden">
+				<button id="auction-popup-success" class="auction-popup-btn success">Erbracht</button>
+				<button id="auction-popup-fail" class="auction-popup-btn fail">Nicht erbracht</button>
+			</div>
 		</div>
 	</div>
 
@@ -1040,15 +1230,60 @@
 		const showAnswerButton = document.getElementById("show-answer-button");
 		const team1Btn = document.getElementById("team-1-btn");
 		const team2Btn = document.getElementById("team-2-btn");
+		const team1MinusIcon = document.getElementById("team-1-minus-icon");
+		const team2MinusIcon = document.getElementById("team-2-minus-icon");
 		const team1BlockIcon = document.getElementById("team-1-block-icon");
 		const team2BlockIcon = document.getElementById("team-2-block-icon");
+		const team1AuctionIcon = document.getElementById("team-1-auction-icon");
+		const team2AuctionIcon = document.getElementById("team-2-auction-icon");
 		const countdownOverlay = document.getElementById("countdown-overlay");
 		const countdownTextEl = document.getElementById("countdown-text");
 		const countdownNumberEl = document.getElementById("countdown-number");
+		const minusPopupOverlay = document.getElementById("minus-popup-overlay");
+		const minusPopupQuestionEl = document.getElementById("minus-popup-question");
+		const minusPopupAnswerEl = document.getElementById("minus-popup-answer");
+		const minusPopupCorrectBtn = document.getElementById("minus-popup-correct");
+		const minusPopupWrongBtn = document.getElementById("minus-popup-wrong");
+		const auctionPopupOverlay = document.getElementById("auction-popup-overlay");
+		const auctionPopupQuestionEl = document.getElementById("auction-popup-question");
+		const auctionPopupTimerEl = document.getElementById("auction-popup-timer");
+		const auctionPopupStartWrap = document.getElementById("auction-popup-start-wrap");
+		const auctionPopupResultActions = document.getElementById("auction-popup-result-actions");
+		const auctionPopupStartBtn = document.getElementById("auction-popup-start");
+		const auctionPopupSuccessBtn = document.getElementById("auction-popup-success");
+		const auctionPopupFailBtn = document.getElementById("auction-popup-fail");
 		const roundTitleRedEl = document.querySelector(".round-title .line-red");
 		const team1ScoreEl = team1Btn.querySelector(".score-pill");
 		const team2ScoreEl = team2Btn.querySelector(".score-pill");
 		let countdownTimer = null;
+		let auctionTimer = null;
+		let auctionTeamClass = "";
+		let minusTargetClass = "";
+		let minusSelfClass = "";
+
+		const MINUS_QUESTION_POOL = [
+			{ question: "Wie viele Knochen hat ein erwachsener Mensch?", answer: "206" },
+			{ question: "Wie schnell ist Licht ungefaehr (km/s)?", answer: "300.000 km/s" },
+			{ question: "Welches Organ produziert Insulin?", answer: "Bauchspeicheldruese" },
+			{ question: "Wie viele Sekunden hat ein Tag?", answer: "86.400" },
+			{ question: "Wie viele Chromosomen hat ein Mensch?", answer: "46" },
+			{ question: "Wie viele Laender gibt es weltweit ungefaehr?", answer: "195" },
+			{ question: "Wie viele Liter Blut hat ein erwachsener Mensch ungefaehr?", answer: "5 Liter" },
+			{ question: "Wie viele Muskeln hat der menschliche Koerper?", answer: "ueber 600" }
+		];
+
+		const AUCTION_QUESTION_POOL = [
+			"Wie viele Laender in Afrika kannst du in 30 Sekunden nennen?",
+			"Wie viele Fussballmannschaften in Europa kannst du in 30 Sekunden nennen?",
+			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
+			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
+			"Wie viele Hauptstädte kannst du in 30 Sekunden nennen?",
+			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
+			"Wie viele Länder in Asien kannst du in 30 Sekunden nennen?",
+			"Wie viele Bahnhaltestellen in Hannover kannst du in 30 Sekunden nennen?",
+			"Wie viele deutsche Städte kannst du in 30 Sekunden nennen?"
+			
+		];
 
 		const QUESTION_BANK_RAW = `Hauptstadt Deutschland? — Berlin
 Was ist das Groesste Land? — Russland
@@ -1420,8 +1655,35 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 			currentRound = 1;
 			team1RoundsWon = 0;
 			team2RoundsWon = 0;
+			resetTeamCards();
 			updateRoundUI();
 			resetBoard();
+		}
+
+		function markCardUsed(cardEl) {
+			if (!cardEl || cardEl.dataset.used === "true") {
+				return false;
+			}
+			cardEl.dataset.used = "true";
+			cardEl.style.visibility = "hidden";
+			cardEl.style.pointerEvents = "none";
+			return true;
+		}
+
+		function resetCard(cardEl) {
+			if (!cardEl) return;
+			cardEl.dataset.used = "false";
+			cardEl.style.visibility = "visible";
+			cardEl.style.pointerEvents = "auto";
+		}
+
+		function resetTeamCards() {
+			resetCard(team1BlockIcon);
+			resetCard(team2BlockIcon);
+			resetCard(team1MinusIcon);
+			resetCard(team2MinusIcon);
+			resetCard(team1AuctionIcon);
+			resetCard(team2AuctionIcon);
 		}
 
 		function showWinScreen(teamName, teamColor) {
@@ -1496,8 +1758,8 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 				clearInterval(countdownTimer);
 			}
 
-			let remaining = 7;
-			countdownTextEl.textContent = `${blockedTeamLabel} muss 7 Sekunden nicht antworten.`;
+			let remaining = 30;
+			countdownTextEl.textContent = `${blockedTeamLabel} muss 30 Sekunden nicht antworten.`;
 			countdownNumberEl.textContent = remaining;
 			countdownOverlay.classList.remove("hidden");
 
@@ -1511,6 +1773,214 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 					countdownTimer = null;
 				}
 			}, 1000);
+		}
+
+		function pickRandomMinusQuestion() {
+			const idx = Math.floor(Math.random() * MINUS_QUESTION_POOL.length);
+			return MINUS_QUESTION_POOL[idx];
+		}
+
+		function removeTwoConsecutiveColoredCells(className) {
+			const coloredIndices = [];
+			hexCells.forEach((cell, idx) => {
+				if (cell.classList.contains(className)) {
+					coloredIndices.push(idx);
+				}
+			});
+
+			if (coloredIndices.length === 0) {
+				return;
+			}
+
+			let pair = null;
+			for (const idx of coloredIndices) {
+				const neighbors = NEIGHBORS[idx] || [];
+				const neighbor = neighbors.find((n) => hexCells[n].classList.contains(className));
+				if (neighbor !== undefined) {
+					pair = [idx, neighbor];
+					break;
+				}
+			}
+
+			if (!pair && coloredIndices.length >= 2) {
+				pair = [coloredIndices[0], coloredIndices[1]];
+			}
+
+			if (!pair) {
+				hexCells[coloredIndices[0]].classList.remove("active", "active-green", "active-orange");
+				return;
+			}
+
+			hexCells[pair[0]].classList.remove("active", "active-green", "active-orange");
+			hexCells[pair[1]].classList.remove("active", "active-green", "active-orange");
+		}
+
+		function closeMinusPopup() {
+			minusPopupOverlay.classList.add("hidden");
+		}
+
+		function openMinusPopup(targetClass, selfClass) {
+			minusTargetClass = targetClass;
+			minusSelfClass = selfClass;
+			const randomQA = pickRandomMinusQuestion();
+			minusPopupQuestionEl.textContent = randomQA.question;
+			minusPopupAnswerEl.textContent = `Antwort: ${randomQA.answer}`;
+			minusPopupOverlay.classList.remove("hidden");
+		}
+
+		function pickRandomAuctionQuestion() {
+			const idx = Math.floor(Math.random() * AUCTION_QUESTION_POOL.length);
+			return AUCTION_QUESTION_POOL[idx];
+		}
+
+		function addThreeConsecutiveColoredCells(className) {
+			const isFreeCell = (idx) => {
+				const cell = hexCells[idx];
+				return !cell.classList.contains("active-green") && !cell.classList.contains("active-orange");
+			};
+
+			const paintCells = (indices) => {
+				indices.forEach((idx) => {
+					hexCells[idx].classList.remove("active");
+					hexCells[idx].classList.add(className);
+				});
+			};
+
+			const teamIndices = [];
+			hexCells.forEach((cell, idx) => {
+				if (cell.classList.contains(className)) {
+					teamIndices.push(idx);
+				}
+			});
+
+			// Team 1 -> vertical (same column, 3 rows).
+			if (className === "active-green") {
+				let best = null;
+				for (const idx of teamIndices) {
+					const row = Math.floor(idx / 5);
+					const col = idx % 5;
+					for (const dir of [-1, 1]) {
+						for (let step = 1; step <= 4; step += 1) {
+							const r1 = row + dir * step;
+							const r2 = row + dir * (step + 1);
+							const r3 = row + dir * (step + 2);
+							if (r1 < 0 || r1 > 4 || r2 < 0 || r2 > 4 || r3 < 0 || r3 > 4) continue;
+							const i1 = r1 * 5 + col;
+							const i2 = r2 * 5 + col;
+							const i3 = r3 * 5 + col;
+							if (!(isFreeCell(i1) && isFreeCell(i2) && isFreeCell(i3))) continue;
+							if (!best || step < best.distance) {
+								best = { distance: step, cells: [i1, i2, i3] };
+							}
+						}
+					}
+				}
+
+				if (best) {
+					paintCells(best.cells);
+					return;
+				}
+
+				for (let col = 0; col < 5; col += 1) {
+					for (let row = 0; row <= 2; row += 1) {
+						const i1 = row * 5 + col;
+						const i2 = (row + 1) * 5 + col;
+						const i3 = (row + 2) * 5 + col;
+						if (isFreeCell(i1) && isFreeCell(i2) && isFreeCell(i3)) {
+							paintCells([i1, i2, i3]);
+							return;
+						}
+					}
+				}
+			}
+
+			// Team 2 -> horizontal (same row, 3 columns).
+			if (className === "active-orange") {
+				let best = null;
+				for (const idx of teamIndices) {
+					const row = Math.floor(idx / 5);
+					const col = idx % 5;
+					for (const dir of [-1, 1]) {
+						for (let step = 1; step <= 4; step += 1) {
+							const c1 = col + dir * step;
+							const c2 = col + dir * (step + 1);
+							const c3 = col + dir * (step + 2);
+							if (c1 < 0 || c1 > 4 || c2 < 0 || c2 > 4 || c3 < 0 || c3 > 4) continue;
+							const i1 = row * 5 + c1;
+							const i2 = row * 5 + c2;
+							const i3 = row * 5 + c3;
+							if (!(isFreeCell(i1) && isFreeCell(i2) && isFreeCell(i3))) continue;
+							if (!best || step < best.distance) {
+								best = { distance: step, cells: [i1, i2, i3] };
+							}
+						}
+					}
+				}
+
+				if (best) {
+					paintCells(best.cells);
+					return;
+				}
+
+				for (let row = 0; row < 5; row += 1) {
+					for (let col = 0; col <= 2; col += 1) {
+						const i1 = row * 5 + col;
+						const i2 = row * 5 + col + 1;
+						const i3 = row * 5 + col + 2;
+						if (isFreeCell(i1) && isFreeCell(i2) && isFreeCell(i3)) {
+							paintCells([i1, i2, i3]);
+							return;
+						}
+					}
+				}
+			}
+
+			const fallback = [];
+			for (let i = 0; i < hexCells.length && fallback.length < 3; i += 1) {
+				if (isFreeCell(i)) fallback.push(i);
+			}
+
+			paintCells(fallback);
+		}
+
+		function closeAuctionPopup() {
+			if (auctionTimer) {
+				clearInterval(auctionTimer);
+				auctionTimer = null;
+			}
+			auctionPopupOverlay.classList.add("hidden");
+		}
+
+		function startAuctionCountdown() {
+			let remaining = 30;
+			auctionPopupTimerEl.textContent = `Zeit: ${remaining} Sekunden`;
+			auctionPopupStartBtn.disabled = true;
+
+			if (auctionTimer) {
+				clearInterval(auctionTimer);
+			}
+
+			auctionTimer = setInterval(() => {
+				remaining -= 1;
+				auctionPopupTimerEl.textContent = `Zeit: ${remaining} Sekunden`;
+				if (remaining <= 0) {
+					clearInterval(auctionTimer);
+					auctionTimer = null;
+					auctionPopupTimerEl.textContent = "Zeit abgelaufen";
+					auctionPopupStartWrap.classList.add("hidden");
+					auctionPopupResultActions.classList.remove("hidden");
+				}
+			}, 1000);
+		}
+
+		function openAuctionPopup(teamClass) {
+			auctionTeamClass = teamClass;
+			auctionPopupQuestionEl.textContent = pickRandomAuctionQuestion();
+			auctionPopupTimerEl.textContent = "Zeit: 30 Sekunden";
+			auctionPopupStartBtn.disabled = false;
+			auctionPopupStartWrap.classList.remove("hidden");
+			auctionPopupResultActions.classList.add("hidden");
+			auctionPopupOverlay.classList.remove("hidden");
 		}
 
 		function pickRandomQuestion(pool, previousQuestion) {
@@ -1590,12 +2060,61 @@ Welches Instrument misst den Luftdruck? — Barometer`;
 
 		team1BlockIcon.addEventListener("click", (event) => {
 			event.stopPropagation();
+			if (!markCardUsed(team1BlockIcon)) return;
 			startBlockCountdown("Team 2");
 		});
 
 		team2BlockIcon.addEventListener("click", (event) => {
 			event.stopPropagation();
+			if (!markCardUsed(team2BlockIcon)) return;
 			startBlockCountdown("Team 1");
+		});
+
+		team1MinusIcon.addEventListener("click", (event) => {
+			event.stopPropagation();
+			if (!markCardUsed(team1MinusIcon)) return;
+			openMinusPopup("active-orange", "active-green");
+		});
+
+		team2MinusIcon.addEventListener("click", (event) => {
+			event.stopPropagation();
+			if (!markCardUsed(team2MinusIcon)) return;
+			openMinusPopup("active-green", "active-orange");
+		});
+
+		team1AuctionIcon.addEventListener("click", (event) => {
+			event.stopPropagation();
+			if (!markCardUsed(team1AuctionIcon)) return;
+			openAuctionPopup("active-green");
+		});
+
+		team2AuctionIcon.addEventListener("click", (event) => {
+			event.stopPropagation();
+			if (!markCardUsed(team2AuctionIcon)) return;
+			openAuctionPopup("active-orange");
+		});
+
+		minusPopupCorrectBtn.addEventListener("click", () => {
+			removeTwoConsecutiveColoredCells(minusTargetClass);
+			closeMinusPopup();
+		});
+
+		minusPopupWrongBtn.addEventListener("click", () => {
+			removeTwoConsecutiveColoredCells(minusSelfClass);
+			closeMinusPopup();
+		});
+
+		auctionPopupStartBtn.addEventListener("click", () => {
+			startAuctionCountdown();
+		});
+
+		auctionPopupSuccessBtn.addEventListener("click", () => {
+			addThreeConsecutiveColoredCells(auctionTeamClass);
+			closeAuctionPopup();
+		});
+
+		auctionPopupFailBtn.addEventListener("click", () => {
+			closeAuctionPopup();
 		});
 
 		updateRoundUI();
