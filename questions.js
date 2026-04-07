@@ -374,12 +374,17 @@ Was ist die grÃ¶ÃŸte WÃ¼ste der Welt? â†’ Sahara;
 		const QUESTION_BANK = QUESTION_BANK_RAW
 			.split("\n")
 			.map((line) => line.trim())
-			.filter((line) => line.includes("â€”"))
+			.filter((line) => line.length > 0)
 			.map((line) => {
-				const separatorIndex = line.lastIndexOf("â€”");
+				const separatorMatch = line.match(/(â€”|â†’|→|—|->|–)/);
+				if (!separatorMatch) {
+					return null;
+				}
+				const separatorIndex = line.indexOf(separatorMatch[0]);
 				return {
 					question: line.slice(0, separatorIndex).trim(),
-					answer: line.slice(separatorIndex + 1).trim()
+					answer: line.slice(separatorIndex + separatorMatch[0].length).trim().replace(/;$/, "")
 				};
-			});
+			})
+			.filter(Boolean);
 

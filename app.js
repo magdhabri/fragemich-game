@@ -296,8 +296,12 @@ let selectedLetter = "";
 
 		function normalizeInitial(answer) {
 			const first = answer.trim().charAt(0).toUpperCase();
-			const aliasMap = { "Ã„": "A", "Ã–": "O", "Ãœ": "U" };
+			const aliasMap = { "Ä": "A", "Ö": "O", "Ü": "U", "Ã„": "A", "Ã–": "O", "Ãœ": "U" };
 			return aliasMap[first] || first;
+		}
+
+		function getQuestionsForLetter(letter) {
+			return QUESTION_BANK.filter((entry) => normalizeInitial(entry.answer) === letter);
 		}
 
 		function hideAnswer() {
@@ -597,13 +601,13 @@ let selectedLetter = "";
 		}
 
 		function loadQuestionForLetter(letter, avoidRepeat) {
-			currentPool = QUESTION_BANK.filter((entry) => {
-				return normalizeInitial(entry.answer) === letter && !usedMainQuestionKeys.has(getQuestionKey(entry));
-			});
+			const matchingQuestions = getQuestionsForLetter(letter);
+			const unusedQuestions = matchingQuestions.filter((entry) => !usedMainQuestionKeys.has(getQuestionKey(entry)));
+			currentPool = unusedQuestions.length > 0 ? unusedQuestions : matchingQuestions;
 			hideAnswer();
 			questionBadgeEl.textContent = letter;
 
-			if (currentPool.length === 0) {
+			if (matchingQuestions.length === 0) {
 				currentQuestion = null;
 				questionTextEl.textContent = "Keine neue Frage mehr fuer diesen Buchstaben verfuegbar.";
 				return;
@@ -611,6 +615,9 @@ let selectedLetter = "";
 
 			const previous = avoidRepeat ? currentQuestion : null;
 			currentQuestion = pickRandomQuestion(currentPool, previous);
+			if (!currentQuestion) {
+				currentQuestion = currentPool[0];
+			}
 			usedMainQuestionKeys.add(getQuestionKey(currentQuestion));
 			questionTextEl.textContent = currentQuestion.question;
 		}
