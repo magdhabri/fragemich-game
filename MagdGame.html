@@ -659,9 +659,16 @@
 			margin-bottom: 18px;
 		}
 
+		.minus-popup-answer.hidden {
+			display: none;
+		}
+
 		.minus-popup-actions {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
+			grid-template-areas:
+				"show show"
+				"correct wrong";
 			gap: 10px;
 		}
 
@@ -676,11 +683,20 @@
 		}
 
 		.minus-popup-btn.correct {
+			grid-area: correct;
 			background: #7ae03a;
 		}
 
 		.minus-popup-btn.wrong {
+			grid-area: wrong;
 			background: #ff8b35;
+		}
+
+		.minus-popup-btn.show-answer {
+			grid-area: show;
+			justify-self: center;
+			width: min(100%, 300px);
+			background: #6fd7e5;
 		}
 
 		.auction-popup-overlay {
@@ -1160,7 +1176,7 @@
 						<div class="hex-cell">U</div>
 						<div class="hex-cell">V</div>
 						<div class="hex-cell">W</div>
-						<div class="hex-cell">X</div>
+						<div class="hex-cell">Z</div>
 						<div class="hex-cell">Y</div>
 					</div>
 				</div>
@@ -1218,8 +1234,9 @@
 		<div class="minus-popup-card">
 			<h3 class="minus-popup-title">Minus-Frage</h3>
 			<p id="minus-popup-question" class="minus-popup-question"></p>
-			<p id="minus-popup-answer" class="minus-popup-answer"></p>
+			<p id="minus-popup-answer" class="minus-popup-answer hidden"></p>
 			<div class="minus-popup-actions">
+				<button id="minus-popup-show-answer" class="minus-popup-btn show-answer">Antwort zeigen</button>
 				<button id="minus-popup-correct" class="minus-popup-btn correct">Richtig</button>
 				<button id="minus-popup-wrong" class="minus-popup-btn wrong">Falsch</button>
 			</div>
@@ -1281,6 +1298,7 @@
 		const minusPopupOverlay = document.getElementById("minus-popup-overlay");
 		const minusPopupQuestionEl = document.getElementById("minus-popup-question");
 		const minusPopupAnswerEl = document.getElementById("minus-popup-answer");
+		const minusPopupShowAnswerBtn = document.getElementById("minus-popup-show-answer");
 		const minusPopupCorrectBtn = document.getElementById("minus-popup-correct");
 		const minusPopupWrongBtn = document.getElementById("minus-popup-wrong");
 		const auctionPopupOverlay = document.getElementById("auction-popup-overlay");
@@ -1303,6 +1321,9 @@
 		let auctionCardEl = null;
 		let minusTargetClass = "";
 		let minusSelfClass = "";
+		let usedMinusQuestionKeys = new Set();
+		let usedAuctionQuestions = new Set();
+		let usedMainQuestionKeys = new Set();
 
 		function updateResponsiveMetrics() {
 			const width = window.innerWidth;
@@ -1335,10 +1356,17 @@
 			{ question: "Wie viele Laender gibt es weltweit ungefaehr?", answer: "195" },
 			{ question: "Wie viele Mal hat Brasilien die Fussball-WM gewonnen?", answer: "5" },
 			{ question: "Wie viele Elemente hat das Periodensystem aktuell?", answer: "118" },
+			{ question: "Wie hoch ist die Lichtgeschwindigkeit?", answer: "ca. 300.000 km/s" },
+			{ question: "Wie viele Sterne hat die chinesische Flagge?", answer: "5" },
+			{ question: "Wann entdeckte Christoph Kolumbus Amerika? Antwort?", answer: "1492" },
 			{ question: "Wie viele Liter Blut hat ein erwachsener Mensch ungefaehr?", answer: "5 Liter" },
-			{ question: "Wie viele Muskeln hat der menschliche Koerper?", answer: "ueber 600" }
+			{ question: "Wie viele Muskeln hat der menschliche Koerper?", answer: "ueber 600" },
+			{ question: "Wann begann die Französische Revolution?", answer: "1789" },
+			{ question: "Wann endete der Zweite Weltkrieg?", answer: "1945" },
+			{ question: "In welchem Jahr landete der erste Mensch auf dem Mond?", answer: "1969" },
+			{ question: "Wann wurde die EU gegründet?", answer: "1993" },
+			{ question: "Wann wurde der Euro eingeführt?", answer: "2002" }
 			
-		
 		];
 
 
@@ -1372,13 +1400,14 @@ Was ist der Hoechste Berg? — Everest
 Welche Hauptstadt liegt am hoechsten ueber dem Meeresspiegel? — La Paz (Bolivien)
 Wer erfand das World Wide Web? — Tim Berners-Lee
 Welches Tier hat den hoechsten Blutdruck? — Giraffe
+In welcher Hauptstadt steht die Statue der kleinen Meerjungfrau? — Kopenhagen
 In welchem Land wurde die Demokratie erfunden? — Griechenland
 Welche Sprache hat die meisten Muttersprachler weltweit? — Mandarin-Chinesisch
 Welches Element hat die hoechste Schmelztemperatur? — Wolfram
 Welcher Komponist wurde taubstumm und schrieb trotzdem Sinfonien? — Beethoven
 Welche Stadt war die erste Hauptstadt der USA? — Philadelphia
 Welcher Kuenstler schnitt sich ein Ohr ab? — Van Gogh
-In welchem Jahr landete der erste Mensch auf dem Mond? — 1969
+Wie hieß der argentinische Fußballstar Maradona mit Vornamen? — Diego
 Welches Gas macht Luftballons leichter als Luft? — Helium
 Was ist die kleinste Einheit eines chemischen Elements? — Atom
 Wie nennt man einen Winkel, der groesser als 180 Grad ist? — Reflex- oder ueberstumpfer Winkel
@@ -1410,6 +1439,32 @@ Was ist die Hauptstadt von Finnland? — Helsinki
 Was ist die Hauptstadt von Schweden? — Stockholm
 Was ist die Hauptstadt von Tschechien? — Prag
 Was ist die Hauptstadt von Kroatien? — Zagreb
+Was ist der größte Vulkan? → Mauna Loa
+Was ist der tiefste Punkt der Erde? → Marianengraben
+Was ist der größte Wald der Welt? → Amazonas-Regenwald
+In welchem Land liegt der Amazonas größtenteils? → Brasilien
+Auf welchem Kontinent liegt die Sahara? → Afrika
+Wo liegen die Alpen? → Europa
+Wo liegt der Himalaya? → Asien
+Wo befindet sich der Nordpol? → Arktis
+Wo befindet sich der Südpol? → Antarktis
+Wer hat das Internet erfunden? → Tim Berners-Lee
+Welche Firma entwickelte den Computer früh? → IBM
+Welche Firma stellt das iPhone her? → Apple
+Welche Firma entwickelt Windows? → Microsoft
+Wer gründete Tesla? → Elon Musk
+Wer gründete Facebook? → Mark Zuckerberg
+Wer gründete Google? → Larry Page
+Wer kaufte YouTube? → Google
+Wer gründete Amazon? → Jeff Bezos
+Wer ist ein berühmter Fußballspieler aus Argentinien? → Messi
+Wer ist ein berühmter Tennisspieler? → Roger Federer
+Wer ist eine Box-Legende? → Muhammad Ali
+Wer hält viele Schwimmrekorde? → Michael Phelps
+Wer ist ein berühmter Golfspieler? → Tiger Woods
+Wer ist ein berühmter Formel-1-Fahrer? → Michael Schumacher
+Welche Liga ist im Eishockey bekannt? → NHL
+Welches Land ist stark im Handball? → Deutschland
 Was ist die Hauptstadt von Palästina? — Jerusalem
 Welcher See liegt zwischen Deutschland, Österreich und der Schweiz? — Bodensee
 Nenne einen Stadtstaat in Europa. — Monaco
@@ -1494,102 +1549,85 @@ Wie nennt man die Umwandlung von Wasser in Wasserdampf? — Verdunstung / Verdam
 Welches Zeichen beschreibt in der Mathematik die Wurzel? — Radikalzeichen (√)
 Welches Konzept beschreibt in der Informatik unendliche Wiederholung? — Rekursion
 Wie heisst der Vorgang, bei dem Licht an einer Grenzflaeche gebrochen wird? — Refraktion
-Schnellster Mensch? — Bolt
-Erster Mensch Mond? — Armstrong
-Hauptstadt Frankreich? — Paris
-Hauptstadt Spanien? — Madrid
-Hauptstadt Italien? — Rom
-Hauptstadt Japan? — Tokio
-Groesster Kontinent? — Asien
-Laengster Fluss? — Nil
-Hauptstadt USA? — Washington
-Praesident USA? — Biden
-Groesste Insel? — Groenland
-Groesster See? — Kaspisches
-Hauptstadt Kanada? — Ottawa
-Hauptstadt China? — Peking
-Hauptstadt Russland? — Moskau
-Hauptstadt Indien? — Neu-Delhi
-Groesste Wueste? — Sahara
-Hauptstadt Aegypten? — Kairo
-Fussball WM Sieger 2022? — Argentinien
-Basketball Legende? — Jordan
-Tennis Nummer Eins? — Djokovic
-Formel1 Rekord? — Hamilton
-Groesstes Stadion? — Rungrado
-Olympische Spiele Ursprung? — Griechenland
-Hauptstadt Brasilien? — Brasilia
-Hauptstadt Argentinien? — Buenos Aires
-Groesste Religion? — Christentum
-Islam Prophet? — Mohammed
-Bibel Sprache? — Hebraeisch
-Hindu Gott? — Brahma
-Buddha Herkunft? — Indien
-Judentum Buch? — Tora
-Christentum Symbol? — Kreuz
-Islam Buch? — Koran
-Groesstes Tier? — Blauwal
-Schnellstes Tier? — Gepard
-Groesster Planet? — Jupiter
-Kleinster Planet? — Merkur
-Roter Planet? — Mars
-Erde Satellit? — Mond
-Sonne Stern? — Ja
-Wasser Formel? — H2O
-Salz Formel? — NaCl
-Lichtgeschwindigkeit? — 300000 km/s
-Erfinder Telefon? — Bell
-Erfinder Gluehbirne? — Edison
-Hauptstadt Tuerkei? — Ankara
-Hauptstadt Griechenland? — Athen
-Hauptstadt Niederlande? — Amsterdam
-Hauptstadt Belgien? — Bruessel
-Hauptstadt Schweiz? — Bern
-Hauptstadt Oesterreich? — Wien
-Hauptstadt Polen? — Warschau
-Hauptstadt Schweden? — Stockholm
-Hauptstadt Norwegen? — Oslo
-Hauptstadt Finnland? — Helsinki
-Groesster Vulkan? — Mauna Loa
-Tiefster Punkt? — Marianengraben
-Erste Zivilisation? — Sumer
-Roemischer Kaiser? — Caesar
-Franzoesische Revolution? — 1789
-Zweiter Weltkrieg Ende? — 1945
-EU Gruendung? — 1993
-NATO Zweck? — Verteidigung
-UNO Sitz? — New York
-Euro Einfuehrung? — 2002
-Schnellster Vogel? — Falke
-Groesster Vogel? — Strauss
-Laengstes Tier? — Blauwal
-Giftigste Schlange? — Inlandtaipan
-Groesster Wald? — Amazonas
-Amazonas Land? — Brasilien
-Sahara Kontinent? — Afrika
-Alpen Lage? — Europa
-Himalaya Lage? — Asien
-Nordpol Ort? — Arktis
-Suedpol Ort? — Antarktis
-Internet Erfinder? — Berners-Lee
-Computer Firma? — IBM
-iPhone Hersteller? — Apple
-Windows Firma? — Microsoft
-Tesla Gruender? — Musk
-Facebook Gruender? — Zuckerberg
-Google Gruender? — Page
-YouTube Kauf? — Google
-Amazon Gruender? — Bezos
-Fussball Spieler? — Messi
-Basketball Spieler? — Jordan
-Tennis Spieler? — Federer
-Boxen Legende? — Ali
-Schwimmen Rekord? — Phelps
-Leichtathletik Star? — Bolt
-Golf Spieler? — Woods
-Formel1 Fahrer? — Schumacher
-Eishockey Liga? — NHL
-Handball Land? — Deutschland;
+Wer ist der schnellste Mensch? → Usain Bolt
+Welche Mannschaft gewann die Fußball-WM 2022? → Argentinien
+Wer ist eine Basketball-Legende? → Michael Jordan
+Wer war Tennis-Weltrangliste Nummer 1? → Novak Djokovic
+Was ist die größte Religion der Welt? → Christentum
+Wer ist der Prophet im Islam? → Mohammed
+Welche Sprache wurde ursprünglich für die Bibel verwendet? → Hebräisch
+Wer ist ein Gott im Hinduismus? → Brahma
+Wo stammt Buddha ursprünglich her? → Indien
+Was ist das heilige Buch des Judentums? → Tora
+Was ist das Symbol des Christentums? → Kreuz
+Was ist das heilige Buch im Islam? → Koran
+Was ist das größte Tier der Welt? → Blauwal
+Was ist das schnellste Tier der Welt? → Gepard
+Was ist der größte Planet? → Jupiter
+Was ist der kleinste Planet? → Merkur
+Welcher Planet wird der „rote Planet“ genannt? → Mars
+Was ist der natürliche Satellit der Erde? → Mond
+Was ist die chemische Formel von Wasser? → H₂O
+Was ist die chemische Formel von Salz? → NaCl
+Wer hält viele Formel-1-Rekorde? → Lewis Hamilton
+Was ist das größte Stadion der Welt? → Rungrado-Stadion
+Wo fanden die ersten Olympischen Spiele statt? → Griechenland
+Was ist die Hauptstadt von Brasilien? → Brasília
+Was ist die Hauptstadt von Argentinien? → Buenos Aires
+Was ist die Hauptstadt der Türkei? → Ankara
+Was ist die Hauptstadt von Griechenland? → Athen
+Was ist die Hauptstadt der Niederlande? → Amsterdam
+Was ist die Hauptstadt von Belgien? → Brüssel
+Was ist die Hauptstadt der Schweiz? → Bern
+Was ist die Hauptstadt von Österreich? → Wien
+Was ist die Hauptstadt von Polen? → Warschau
+Was ist die Hauptstadt von Schweden? → Stockholm
+Was ist die Hauptstadt von Norwegen? → Oslo
+Was ist die Hauptstadt von Finnland? → Helsinki
+Wer war der erste Mensch auf dem Mond? → Neil Armstrong
+Was ist die Hauptstadt von Frankreich? → Paris
+Was ist die Hauptstadt von Spanien? → Madrid
+Was ist die Hauptstadt von Italien? → Rom
+Was ist die Hauptstadt von Japan? → Tokio
+Was ist die Hauptstadt der USA? → Washington, D.C.
+Was ist der größte Kontinent? → Asien
+Was ist der längste Fluss der Welt? → Nil
+Was ist die größte Insel der Welt? → Grönland
+Was ist der größte See der Welt? → Kaspisches Meer
+Was ist die Hauptstadt von Kanada? → Ottawa
+Was ist die Hauptstadt von China? → Peking
+Was ist die Hauptstadt von Russland? → Moskau
+Was ist die Hauptstadt von Indien? → Neu-Delhi
+Was ist die Hauptstadt von Ägypten? → Kairo
+Wie heißt die Meerenge, die Spanien von Marokko trennt? — Gibraltar
+In welcher Stadt befindet sich der Hauptsitz der Vereinten Nationen (UN)? — New York City
+Welches Organ im menschlichen Körper ist als einziges in der Lage, sich fast vollständig zu regenerieren? — Leber
+Wie nennt man die kleinste biologische Einheit, die alle Merkmale des Lebens aufweist? — Zelle
+Welche Zivilisation nutzte als erste die Keilschrift? — Sumerer
+Wer war der erste Präsident der Bundesrepublik Deutschland? — Theodor Heuss
+Wie hieß die Friedenskonferenz, die den Dreißigjährigen Krieg beendete? — Westfälischer Friede
+In welcher Programmiersprache wurde der ursprüngliche Kern von Unix geschrieben? — C
+Was bedeutet die Abkürzung „HTTP“ am Anfang von Webadressen? — Hypertext Transfer Protocol
+Wie hieß der erste Computer, der 1941 von Konrad Zuse fertiggestellt wurde? — Z3
+Welches Protein ist im menschlichen Körper am häufigsten vertreten? — Kollagen
+Welches Element ist das schwerste natürlich vorkommende Element im Universum? — Uran
+Welche Zellorganellen besitzen ihre eigene DNA und werden nur mütterlicherseits vererbt? — Mitochondrien
+Welcher Vertrag besiegelte 1919 das Ende des Ersten Weltkriegs? — Versailles
+Wer gilt als der Begründer der modernen Ökonomie und schrieb „Der Wohlstand der Nationen“? — Adam Smith
+Welcher Philosoph prägte den Satz „Ich weiß, dass ich nichts weiß“? — Sokrates
+Welches Land hat die meisten Inseln weltweit? — Schweden
+Wie nennt man in der Musik eine Komposition für zwei Interpreten? — Duett
+Wie nennt man den Zustand, wenn die Inflationsrate sinkt und die Preise allgemein fallen? — Deflation
+Welches Land hat das höchste Bruttoinlandsprodukt (BIP) pro Kopf? — Luxemburg
+Wie heißt das Protein, das für den Sauerstofftransport in den Muskeln (nicht im Blut) verantwortlich ist? — Myoglobin
+Wie viele Tasten hat ein Standard-Klavier normalerweise? — 88
+Welche Farbe hat das Blut von Kraken? — Blau
+Was war die erste Währung der Bundesrepublik Deutschland vor der Einführung der D-Mark (1948)? — Reichsmark
+Welcher Teil des menschlichen Gehirns ist primär für das Gleichgewicht zuständig? — Kleinhirn (Cerebellum)
+Wie nennt man ein Teilchen, das aus einem Quark und einem Antiquark besteht? — Meson
+Welches chemische Element ist nach dem Geburtsland von Marie Curie benannt? — Polonium
+Was ist die einzige Zahl, die im römischen Zahlensystem kein eigenes Symbol hat? — Null
+Was ist die größte Wüste der Welt? → Sahara;
 		`;
 
 
@@ -1759,9 +1797,16 @@ Handball Land? — Deutschland;
 			currentRound = 1;
 			team1RoundsWon = 0;
 			team2RoundsWon = 0;
+			usedMinusQuestionKeys = new Set();
+			usedAuctionQuestions = new Set();
+			usedMainQuestionKeys = new Set();
 			resetTeamCards();
 			updateRoundUI();
 			resetBoard();
+		}
+
+		function getQuestionKey(entry) {
+			return `${entry.question}|||${entry.answer}`;
 		}
 
 		function markCardUsed(cardEl) {
@@ -1880,8 +1925,14 @@ Handball Land? — Deutschland;
 		}
 
 		function pickRandomMinusQuestion() {
-			const idx = Math.floor(Math.random() * MINUS_QUESTION_POOL.length);
-			return MINUS_QUESTION_POOL[idx];
+			const available = MINUS_QUESTION_POOL.filter((entry) => !usedMinusQuestionKeys.has(getQuestionKey(entry)));
+			if (available.length === 0) {
+				return null;
+			}
+			const idx = Math.floor(Math.random() * available.length);
+			const chosen = available[idx];
+			usedMinusQuestionKeys.add(getQuestionKey(chosen));
+			return chosen;
 		}
 
 		function removeTwoConsecutiveColoredCells(className) {
@@ -1920,6 +1971,7 @@ Handball Land? — Deutschland;
 		}
 
 		function closeMinusPopup() {
+			minusPopupAnswerEl.classList.add("hidden");
 			minusPopupOverlay.classList.add("hidden");
 		}
 
@@ -1927,24 +1979,29 @@ Handball Land? — Deutschland;
 			minusTargetClass = targetClass;
 			minusSelfClass = selfClass;
 			const randomQA = pickRandomMinusQuestion();
+			if (!randomQA) {
+				return false;
+			}
 			minusPopupQuestionEl.textContent = randomQA.question;
 			minusPopupAnswerEl.textContent = `Antwort: ${randomQA.answer}`;
+			minusPopupAnswerEl.classList.add("hidden");
 			minusPopupOverlay.classList.remove("hidden");
+			return true;
 		}
 
 		function pickRandomAuctionQuestion(previousQuestion = "") {
-			if (AUCTION_QUESTION_POOL.length === 0) {
-				return "Keine Auktionsfrage verfuegbar.";
-			}
-			if (AUCTION_QUESTION_POOL.length === 1) {
-				return AUCTION_QUESTION_POOL[0];
+			const available = AUCTION_QUESTION_POOL.filter((question) => {
+				return !usedAuctionQuestions.has(question) && question !== previousQuestion;
+			});
+
+			if (available.length === 0) {
+				return null;
 			}
 
-			let candidate = AUCTION_QUESTION_POOL[Math.floor(Math.random() * AUCTION_QUESTION_POOL.length)];
-			while (candidate === previousQuestion) {
-				candidate = AUCTION_QUESTION_POOL[Math.floor(Math.random() * AUCTION_QUESTION_POOL.length)];
-			}
-			return candidate;
+			const idx = Math.floor(Math.random() * available.length);
+			const chosen = available[idx];
+			usedAuctionQuestions.add(chosen);
+			return chosen;
 		}
 
 		function addThreeConsecutiveColoredCells(className) {
@@ -2096,7 +2153,12 @@ Handball Land? — Deutschland;
 		function openAuctionPopup(teamClass) {
 			auctionTeamClass = teamClass;
 			auctionCardEl = teamClass === "active-green" ? team1AuctionIcon : team2AuctionIcon;
-			auctionPopupQuestionEl.textContent = pickRandomAuctionQuestion();
+			const auctionQuestion = pickRandomAuctionQuestion();
+			if (!auctionQuestion) {
+				questionTextEl.textContent = "Keine neue Auktionsfrage mehr verfuegbar.";
+				return;
+			}
+			auctionPopupQuestionEl.textContent = auctionQuestion;
 			auctionPopupTimerEl.textContent = "Zeit: 30 Sekunden";
 			auctionPopupAnotherBtn.disabled = false;
 			auctionPopupStartBtn.disabled = false;
@@ -2116,18 +2178,21 @@ Handball Land? — Deutschland;
 		}
 
 		function loadQuestionForLetter(letter, avoidRepeat) {
-			currentPool = QUESTION_BANK.filter((entry) => normalizeInitial(entry.answer) === letter);
+			currentPool = QUESTION_BANK.filter((entry) => {
+				return normalizeInitial(entry.answer) === letter && !usedMainQuestionKeys.has(getQuestionKey(entry));
+			});
 			hideAnswer();
 			questionBadgeEl.textContent = letter;
 
 			if (currentPool.length === 0) {
 				currentQuestion = null;
-				questionTextEl.textContent = "Keine passende Frage fuer diesen Buchstaben gefunden.";
+				questionTextEl.textContent = "Keine neue Frage mehr fuer diesen Buchstaben verfuegbar.";
 				return;
 			}
 
 			const previous = avoidRepeat ? currentQuestion : null;
 			currentQuestion = pickRandomQuestion(currentPool, previous);
+			usedMainQuestionKeys.add(getQuestionKey(currentQuestion));
 			questionTextEl.textContent = currentQuestion.question;
 		}
 
@@ -2194,14 +2259,24 @@ Handball Land? — Deutschland;
 
 		team1MinusIcon.addEventListener("click", (event) => {
 			event.stopPropagation();
-			if (!markCardUsed(team1MinusIcon)) return;
-			openMinusPopup("active-orange", "active-green");
+			if (team1MinusIcon.dataset.used === "true") return;
+			const opened = openMinusPopup("active-orange", "active-green");
+			if (!opened) {
+				questionTextEl.textContent = "Keine neue Minus-Frage mehr verfuegbar.";
+				return;
+			}
+			markCardUsed(team1MinusIcon);
 		});
 
 		team2MinusIcon.addEventListener("click", (event) => {
 			event.stopPropagation();
-			if (!markCardUsed(team2MinusIcon)) return;
-			openMinusPopup("active-green", "active-orange");
+			if (team2MinusIcon.dataset.used === "true") return;
+			const opened = openMinusPopup("active-green", "active-orange");
+			if (!opened) {
+				questionTextEl.textContent = "Keine neue Minus-Frage mehr verfuegbar.";
+				return;
+			}
+			markCardUsed(team2MinusIcon);
 		});
 
 		team1AuctionIcon.addEventListener("click", (event) => {
@@ -2219,6 +2294,10 @@ Handball Land? — Deutschland;
 			closeMinusPopup();
 		});
 
+		minusPopupShowAnswerBtn.addEventListener("click", () => {
+			minusPopupAnswerEl.classList.remove("hidden");
+		});
+
 		minusPopupWrongBtn.addEventListener("click", () => {
 			removeTwoConsecutiveColoredCells(minusSelfClass);
 			closeMinusPopup();
@@ -2229,7 +2308,13 @@ Handball Land? — Deutschland;
 		});
 
 		auctionPopupAnotherBtn.addEventListener("click", () => {
-			auctionPopupQuestionEl.textContent = pickRandomAuctionQuestion(auctionPopupQuestionEl.textContent);
+			const nextQuestion = pickRandomAuctionQuestion(auctionPopupQuestionEl.textContent);
+			if (!nextQuestion) {
+				auctionPopupAnotherBtn.disabled = true;
+				auctionPopupQuestionEl.textContent = "Keine weitere neue Auktionsfrage verfuegbar.";
+				return;
+			}
+			auctionPopupQuestionEl.textContent = nextQuestion;
 		});
 
 		auctionPopupCloseBtn.addEventListener("click", () => {
