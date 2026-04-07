@@ -208,7 +208,7 @@ let selectedLetter = "";
 			currentQuestion = null;
 			currentPool = [];
 			questionBadgeEl.textContent = "!";
-			questionTextEl.textContent = "WÃ¤hle einen Buchstaben, um eine Frage anzuzeigen.";
+			questionTextEl.textContent = "Wähle einen Buchstaben, um eine Frage anzuzeigen.";
 			hideAnswer();
 		}
 
@@ -274,9 +274,9 @@ let selectedLetter = "";
 			winTeamNameEl.textContent = teamName;
 			winTeamNameEl.style.color = teamColor;
 			winMessageEl.textContent = isFinalWin
-				? "gewinnt das ganze Spiel! Herzlichen GlÃ¼ckwunsch!"
+				? "gewinnt das ganze Spiel! Herzlichen Glückwunsch!"
 				: `hat Runde ${currentRound} gewonnen!`;
-			nextRoundBtn.textContent = isFinalWin ? "Spiel beenden" : "Zur nÃ¤chsten Runde â†’";
+			nextRoundBtn.textContent = isFinalWin ? "Spiel beenden" : "Zur nächsten Runde →";
 			
 			showScreen(winScreen);
 			

@@ -1,4 +1,16 @@
-﻿const MINUS_QUESTION_POOL = [
+﻿function normalizeMojibakeText(text) {
+	if (!/[ÃÂâ]/.test(text)) {
+		return text;
+	}
+
+	try {
+		return decodeURIComponent(escape(text));
+	} catch (error) {
+		return text;
+	}
+}
+
+const MINUS_QUESTION_POOL = [
 			{ question: "Wie viele Knochen hat ein erwachsener Mensch?", answer: "206" },
 			{ question: "Wie schnell ist Licht ungefaehr (km/s)?", answer: "300.000 km/s" },
 			{ question: "Welches Organ produziert Insulin?", answer: "Bauchspeicheldruese" },
@@ -32,7 +44,10 @@
 			{ question: "Wann wurde die EU gegrÃ¼ndet?", answer: "1993" },
 			{ question: "Wann wurde der Euro eingefÃ¼hrt?", answer: "2002" }
 			
-		];
+		].map((entry) => ({
+			question: normalizeMojibakeText(entry.question),
+			answer: normalizeMojibakeText(entry.answer)
+		}));
 
 
 		const AUCTION_QUESTION_POOL = [
@@ -56,8 +71,8 @@
 			"Wie viele Farben kannst du in 30 Sekunden nennen?",
 			"Wie viele Zahlen zwischen 1 und 100 kannst du in 30 Sekunden nennen?",
 			"Wie viele MÃ¶belstÃ¼cke kannst du in 30 Sekunden nennen?"
-			
-		];
+		
+		].map((entry) => normalizeMojibakeText(entry));
 
 		const QUESTION_BANK_RAW = `Hauptstadt Deutschland? â€” Berlin
 Was ist das Groesste Land? â€” Russland
@@ -382,8 +397,8 @@ Was ist die grÃ¶ÃŸte WÃ¼ste der Welt? â†’ Sahara;
 				}
 				const separatorIndex = line.indexOf(separatorMatch[0]);
 				return {
-					question: line.slice(0, separatorIndex).trim(),
-					answer: line.slice(separatorIndex + separatorMatch[0].length).trim().replace(/;$/, "")
+					question: normalizeMojibakeText(line.slice(0, separatorIndex).trim()),
+					answer: normalizeMojibakeText(line.slice(separatorIndex + separatorMatch[0].length).trim().replace(/;$/, ""))
 				};
 			})
 			.filter(Boolean);
